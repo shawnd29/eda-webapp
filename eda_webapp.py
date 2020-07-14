@@ -20,11 +20,6 @@ from dateutil.parser import parse
 from math import log
 from math import ceil
 
-from sklearn.feature_selection import chi2
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.preprocessing import LabelEncoder
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import PowerTransformer
 
 import warnings
 warnings.filterwarnings("ignore")
