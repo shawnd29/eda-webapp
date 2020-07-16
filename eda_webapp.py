@@ -57,7 +57,7 @@ def read_file():
     global df
     DATA_FOLDER = st.text_area("Enter Folder path", '')
     DATA_FILE = st.text_area("Enter File path", 'bank-additional-full.csv')
-    sepretaion = st.text_area("Enter Speration", ';')
+    sepretaion = st.text_area("Enter Seperation", ';')
     # DATA_FILE = 'bank-additional-full.csv'
     df=read_data(DATA_FOLDER,DATA_FILE,sepretaion)
     #df= pd.read_csv(os.path.join(DATA_FOLDER,DATA_FILE), sep=';')
