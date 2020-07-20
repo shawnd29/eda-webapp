@@ -43,12 +43,15 @@ logging.info("Packages imported successfully")
 documentation_string= "\n"
 documentation_substring=""
 df=pd.DataFrame()
+df_categorical=pd.DataFrame()
+df_numeric=pd.DataFrame()
+df_date=pd.DataFrame()
 target=pd.Series()
 # If you want to add your own dataset 
 files1={'file_name':["bank-additional-full.csv","shelter_cat_outcome_eng.csv","diabetes data.csv","googleplaystore.csv","<Experimental Reading data>"],
         'name':["Bank information","Cat Shelter information","Diableies information","Google Playstore","<Experimental Reading data>"],
         'target':["y","outcome_type","Diabetes","","Find your target variable"],
-        'description':["This is a relatively cleaned dataset with balanced categorical and numeric values.","This data set focuses on missing values.","This dataset contains numeric-heavy features.",
+        'description':["This is a relatively cleaned dataset with balanced categorical and numeric values.","This dataset focuses on missing values.","This dataset contains numeric-heavy features.",
         "This dataset contains categorical- heavy features with no target variable.","This dataset shows how you could locally add your own data to explore"]   }
 
 files=pd.DataFrame(files1)
@@ -60,15 +63,23 @@ def read_file():
     global documentation_substring
     global df
     st.write("### It's really great that you are curious! :smile: This is where you can add your own files if you download the source code")
-    DATA_FOLDER = st.text_area("Enter Folder path", '')
-    DATA_FILE = st.text_input("Enter File path", 'bank-additional-full.csv')
-    sepretaion = st.text_input("Enter Seperation", ',')
-    # DATA_FILE = 'bank-additional-full.csv'
-    df=read_data(DATA_FOLDER,DATA_FILE,sepretaion)
-    #df= pd.read_csv(os.path.join(DATA_FOLDER,DATA_FILE), sep=';')
-    documentation_substring= f"File {DATA_FILE} successfully read from {DATA_FOLDER}\n"
-    logging.info(documentation_substring)
-    documentation_string+=documentation_substring+'\n'
+    reading_data_choice= st.selectbox("Choose a way to read a file",["By manually writing the commands","By uploading the file"])
+    if reading_data_choice=="By manually writing the commands":
+
+        DATA_FOLDER = st.text_area("Enter Folder path", '')
+        DATA_FILE = st.text_input("Enter File path", 'bank-additional-full.csv')
+        sepretaion = st.text_input("Enter Seperation", ',')
+        # DATA_FILE = 'bank-additional-full.csv'
+        df=read_data(DATA_FOLDER,DATA_FILE,sepretaion)
+        #df= pd.read_csv(os.path.join(DATA_FOLDER,DATA_FILE), sep=';')
+        documentation_substring= f"File {DATA_FILE} successfully read from {DATA_FOLDER}\n"
+        logging.info(documentation_substring)
+        documentation_string+=documentation_substring+'\n'
+    if reading_data_choice=="By uploading the file":
+        uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+        if uploaded_file is not None:
+            df = pd.read_csv(uploaded_file)
+            st.write(df)
     pass 
 
 #@st.cache(allow_output_mutation=True)
@@ -113,10 +124,13 @@ def find_target(target_name):
 #@st.cache()
 def seperate_features():
     global df
+    global df_numeric
+    global df_categorical
+    global df_date
     df_numeric=df.select_dtypes(include=['float64', 'int64'])
     df_date=df.select_dtypes(include=['datetime64'])
     df_categorical=df.select_dtypes(exclude=['float64', 'int64','datetime64'])
-    return df_numeric, df_categorical, df_date
+    pass
 
 
 
@@ -192,6 +206,9 @@ def eda_analysis():
     global documentation_string
     global documentation_substring
     global df
+    global df_categorical
+    global df_numeric
+    global df_date
     # Utilizing a documentation platform to see all the changes we would be using (Useful for pipelining)
    
 
@@ -199,9 +216,9 @@ def eda_analysis():
     st.subheader('Data Input')
     #read_file()
     option = st.selectbox(
-        'Choose which type of data',files.file_name)
+        'Choose which type of data',files.name)
     st.write("You have chosen "+option)
-    option_index=files.index[files['file_name']==option]
+    option_index=files.index[files['name']==option]
     # st.write(files.loc[option_index,'file_name'].item())
     option_name=files.loc[option_index,'file_name'].item()
     st.write(files.loc[option_index,'description'].item())
@@ -211,20 +228,6 @@ def eda_analysis():
         df= read_data("",option_name,",")
 
 
-
-    # def copy_dataframe():
-    #     df=original_df.copy()
-
-    # if st.button('Read File'):
-    # original_df=read_file()
-    # st.write(original_df.head())
-    # documentation_substring= f"File {DATA_FILE} successfully read from {DATA_FOLDER}\n"
-    # logging.info(documentation_substring)
-    # documentation_string+=documentation_substring+'\n'
-
-    #  add_selectbox== "Read data": 
-    #     df=read_file()
-    #     st.write(df.head())
 
 
     if st.button('Initial features'):
@@ -289,7 +292,7 @@ def eda_analysis():
     #     st.write(1)
 
 
-
+    st.info('Make sure you define the target variable for bivariate classification')
     if st.checkbox('Find the target variable'):
         if (files.loc[option_index,'name'].item() == "<Experimental Reading data>") and (files.loc[option_index,'target'].item()=="Find your target variable"):
             st.write(df.head())
@@ -328,9 +331,9 @@ def eda_analysis():
                 low_information_cols.append(col)
                 continue
 
-            if top_pct < 0.85 and top_pct > 0.20:
+            if top_pct < 0.85 and top_pct > 0.10:
                 low_information_cols.append(col)
-                st.write('Column: {0}       Most poulated value: {1}  which covers {2:.5f}% of the column'.format(col,cnts.index[0], top_pct*100))
+                st.write('Column: {0}       Most populated value: {1}  which covers {2:.5f}% of the column'.format(col,cnts.index[0], top_pct*100))
                 st.write(cnts)
                 st.write('\n')
         
@@ -363,9 +366,13 @@ def eda_analysis():
     # if st.button("Drop the target variable from the dataframe <Pending>"):
     #     pass
 
+    df_numeric=df.select_dtypes(include=['float64', 'int64'])
+    df_date=df.select_dtypes(include=['datetime64'])
+    df_categorical=df.select_dtypes(exclude=['float64', 'int64','datetime64'])
+    
+    
 
-    df_numeric, df_categorical, df_date=seperate_features()
-
+    
     if st.button("Get numeric, categorical and datetime features"):
         st.write("### Numierc Features")
         st.write(df_numeric.head())
@@ -374,8 +381,7 @@ def eda_analysis():
         st.write("### Date-time features")
         st.write(df_date.head())
         st.text(f"The following columns were categorized as: \n numeric: {df_numeric.columns}\n categroical: {df_categorical.columns}\n date-time: {df_date.columns}\n")
-
-    # st.markdown("## Categorical columns")
+        
     # if st.button("Remove extra white space in text columns <Pending>"):
     #     pass
     st.markdown("## Categorical columns")
@@ -391,15 +397,25 @@ def eda_analysis():
         #st.write(df_numeric)
 
     categorical_selector= st.radio("Choose what type of categorical analysis to conduct:",["Select one of the two", "Univariate analysis of categorical feature","Bivariate analysis of categorical feature"])
-        
+    categorical_names=df_categorical.columns.tolist()
+    categorical_names.append("All columns")
     if (categorical_selector=="Univariate analysis of categorical feature"):
-        for col in df_categorical.columns:
-            categorical_summarized(df_categorical,y=col)
+        categorical_option=st.selectbox("Choose which column",categorical_names)
+        if (categorical_option=="All columns"):
+            for col in df_categorical.columns:
+                categorical_summarized(df_categorical,y=col)
+        else:
+            categorical_summarized(df_categorical,y=categorical_option)
+
 
     if (categorical_selector=="Bivariate analysis of categorical feature"):
         st.write("**Make sure that you have defined the target variable**")
-        for col in df_categorical.columns:
-            categorical_summarized(df_categorical,y=col,hue=target)
+        categorical_option=st.selectbox("Choose which column",categorical_names)
+        if (categorical_option=="All columns"):
+            for col in df_categorical.columns:
+                categorical_summarized(df_categorical,y=col,hue=target)
+        else:
+            categorical_summarized(df_categorical,y=categorical_option,hue=target)
 
     # if st.button("Categorical Data Imputation <Pending>"):
     #     pass
@@ -418,7 +434,7 @@ def eda_analysis():
         
 
     st.markdown("## Date-time columns")
-
+    st.write(df_date.head())
     if st.button("All functions <Pending>"):
         st.write("Still working on extracting dates {since they are not always a date64 data type}. Would love some advice on this")
 
@@ -430,19 +446,28 @@ def eda_analysis():
         st.write(df_numeric.head())
         df_numeric.hist(figsize=(20, 20), bins=10, xlabelsize=8, ylabelsize=8);
         st.pyplot() 
-
-
+    
     numeric_selector= st.radio("Choose what type of numeric analysis to conduct:",["Select one of the three", "Univariate analysis of numeric feature","Bivariate analysis of numeric feature","Multivariate variate analysis of numeric feature"])
-
+    numeric_names=df_numeric.columns.tolist()
+    numeric_names.append("All columns")
     if (numeric_selector=="Univariate analysis of numeric feature"):
-        for col in df_numeric.columns:
-            quantitative_summarized(df_numeric,y=col)
+        numeric_option=st.selectbox("Choose which column",numeric_names)
+        if (numeric_option=="All columns"):
+            for col in df_numeric.columns:
+                quantitative_summarized(df_numeric,y=col)
+        else:
+            quantitative_summarized(df_numeric,y=numeric_option)
+
 
     if (numeric_selector=="Bivariate analysis of numeric feature"):
         st.write("**Make sure that you have defined the target variable**")
-        for col in df_numeric.columns:
-            quantitative_summarized(dataframe= df_numeric, y = col, palette=c_palette, x = target, verbose=False)
-
+        numeric_option=st.selectbox("Choose which column",numeric_names)
+        if (numeric_option=="All columns"):
+            for col in df_numeric.columns:
+                quantitative_summarized(dataframe= df_numeric, y = col, palette=c_palette, x = target, verbose=False)
+        else:
+            quantitative_summarized(dataframe= df_numeric, y = numeric_option, palette=c_palette, x = target, verbose=False)
+        
     if (numeric_selector=="Multivariate variate analysis of numeric feature"):
         var1 = st.text_input("Enter the first variable")
         var2 = st.text_input("Enter the second variable")
@@ -452,7 +477,54 @@ def eda_analysis():
         st.write(target.name)
         st.write(type(target))
         st.write(target.value_counts())
+    st.write()
+    st.write()
+    
+    if st.button("You're done!! Click here to celebrate"):    
+        st.balloons()
 
 
+#### This is an expereimental feature that I was trying to implement. It focuses on manually seperating the categorical, numeric and time-series data. 
+#### Any advice on this would be greatly beneficial
+
+def choose_data_types():
+    global df
+    global df_categorical,df_numeric,df_date
+    categorical_name_options = st.multiselect(
+    'Choose your categorical variables',
+        df.columns.tolist(),
+        df_categorical.columns.tolist())
+    st.write('You selected:', df[categorical_name_options].head())
+
+    numeric_name_options = st.multiselect(
+    'Choose your  Numeric variables',
+        df.columns.tolist(),
+        df_numeric.columns.tolist())
+    st.write('You selected:', df[numeric_name_options].head())
+
+    datetime_name_options = st.multiselect(
+    'Choose your  Datetime variables',
+        df.columns.tolist(),
+        df_date.columns.tolist())
+    st.write('You selected:',  df[datetime_name_options].head())
+
+    st.write("")
+    st.write("")
+    st.warning("Make sure that you confirm the changes")
+    if st.button("Confirm options?"):
+        df_categorical,df_numeric,df_date=confirm_options(df_categorical,df_numeric,df_date,categorical_name_options,numeric_name_options,datetime_name_options)
+        pass
+    else:
+        raise st.ScriptRunner.StopException
+
+
+#@st.cache(allow_output_mutation=True)
+def confirm_options(df_categorical,df_numeric,df_date,categorical_name_options,numeric_name_options,datetime_name_options):
+    df_categorical=df[categorical_name_options]
+    df_numeric=df[numeric_name_options]
+    df_date=df[datetime_name_options]
+    return df_categorical,df_numeric,df_date
+
+#     return(df_categorical,df_numeric,df_date)
 if __name__ == "__main__":
     eda_analysis()

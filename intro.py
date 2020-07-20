@@ -3,9 +3,19 @@ def hello():
     st.write("# Hello! :smile:")
     st.write("")
     st.write("")
+    st.write("## Aim")
     st.write("### This project was desgined to streamline the Exploratory Data Analysis (EDA) and Machine Learning commonly used in classification models")
     st.write("")
+    st.write("## Backstory")
+    st.write("A lot of times, getting a high level analysis takes time to code and develop, and generally follows a linear path.")
+    st.write("This project was designed to streamline that process and eventually build a baseline machine learning model as a citizen data scientist")
+    st.write("")
+    st.write("")
+    st.write("## References")
+    st.write("")
+    st.write("")
     st.write("These links were an inspiration for this project")
+    st.write("")
     st.write("**The Essential Toolbox for Data Cleaning**  - https://towardsdatascience.com/the-simple-yet-practical-data-cleaning-codes-ad27c4ce0a38")
     st.write("**Code snippets from CHRIS ALBON** - https://chrisalbon.com/")
     st.write("**Data Cleaning with Python** - https://towardsdatascience.com/data-cleaning-in-python-the-ultimate-guide-2020-c63b88bf0a0d")
@@ -23,9 +33,12 @@ def hello():
     st.write("")
     st.write("")
 
-
-    st.write("For links to the Github Code, do visit:")
-    st.write("To recommend any suggestions, do reach out to me thorugh LinkenIn ")
+    st.write("## A little bit about me:")
+    st.write("Thanks for scrolling all the way down!")
+    st.write("My name is Shawn D'Souza and I recently graduated with my Masters of Science in Data Science.")
+    st.write("When I am not cooking something new, I would be building on some interesting concepts. ")
+    st.write("For links to the Github Code, do visit:   https://github.com/shawnd29/eda-webapp" )
+    st.write("To recommend any suggestions, do reach out to me thorugh LinkenIn:  https://www.linkedin.com/in/shawn-dsouza/")
 
 
 if __name__ == "__main__":
