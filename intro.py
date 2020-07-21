@@ -36,9 +36,13 @@ def hello():
     st.write("## A little bit about me:")
     st.write("Thanks for scrolling all the way down!")
     st.write("My name is Shawn D'Souza and I recently graduated with my Masters of Science in Data Science.")
-    st.write("When I am not cooking something new, I would be building on some interesting concepts. ")
+    st.write("When I am not learning a new recipe to cook, I would be building on some interesting concepts within the data and analytics domain. ")
+    st.write("Currently, I am volunteering for a charity organization to raise awareness form an online platform in Sierra Leone.")
+    st.write("")
     st.write("For links to the Github Code, do visit:   https://github.com/shawnd29/eda-webapp" )
     st.write("To recommend any suggestions, do reach out to me thorugh LinkenIn:  https://www.linkedin.com/in/shawn-dsouza/")
+
+
 
 
 if __name__ == "__main__":
