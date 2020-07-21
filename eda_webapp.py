@@ -49,7 +49,7 @@ df_date=pd.DataFrame()
 target=pd.Series()
 # If you want to add your own dataset 
 files1={'file_name':["bank-additional-full.csv","shelter_cat_outcome_eng.csv","diabetes data.csv","googleplaystore.csv","<Experimental Reading data>"],
-        'name':["Bank information","Cat Shelter information","Diableies information","Google Playstore","<Experimental Reading data>"],
+        'name':["Bank information","Cat Shelter information","Diabetes information","Google Playstore","<Experimental Reading data>"],
         'target':["y","outcome_type","Diabetes","","Find your target variable"],
         'description':["This is a relatively cleaned dataset with balanced categorical and numeric values.","This dataset focuses on missing values.","This dataset contains numeric-heavy features.",
         "This dataset contains categorical- heavy features with no target variable.","This dataset shows how you could locally add your own data to explore"]   }
@@ -58,14 +58,38 @@ files=pd.DataFrame(files1)
 
 
 def read_file(): 
+    '''
+    Function that helps a user to manually define their own CSV file
+    
+    Arguments
+    =========
+    None
+    
+    Returns
+    =======
+    None
+
+    Comments
+    ========
+
+    Creates df: A user-defined DataFrame that renders the CSV file used for the rest of the session
+    '''
+
 #File location
     global documentation_string
     global documentation_substring
     global df
     st.write("### It's really great that you are curious! :smile: This is where you can add your own files if you download the source code")
-    reading_data_choice= st.selectbox("Choose a way to read a file",["By manually writing the commands","By uploading the file"])
-    if reading_data_choice=="By manually writing the commands":
+    reading_data_choice= st.selectbox("Choose a way to read a file",["By uploading a CSV file","By manually writing the commands"])
+   
+    if reading_data_choice=="By uploading a CSV file":
+        uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+        if uploaded_file is not None:
+            df = pd.read_csv(uploaded_file)
+            st.write(df)
 
+    if reading_data_choice=="By manually writing the commands":
+        
         DATA_FOLDER = st.text_area("Enter Folder path", '')
         DATA_FILE = st.text_input("Enter File path", 'bank-additional-full.csv')
         sepretaion = st.text_input("Enter Seperation", ',')
@@ -75,11 +99,7 @@ def read_file():
         documentation_substring= f"File {DATA_FILE} successfully read from {DATA_FOLDER}\n"
         logging.info(documentation_substring)
         documentation_string+=documentation_substring+'\n'
-    if reading_data_choice=="By uploading the file":
-        uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
-        if uploaded_file is not None:
-            df = pd.read_csv(uploaded_file)
-            st.write(df)
+    
     pass 
 
 #@st.cache(allow_output_mutation=True)
@@ -87,33 +107,123 @@ def read_data(DATA_FOLDER,DATA_FILE,sepretaion):
     df= pd.read_csv(os.path.join(DATA_FOLDER,DATA_FILE), sep=sepretaion)
     return df
 
+def initial_features(df):
+
+    '''
+    Helper function that gives a quick summary of a given column of the dataframe
+
+    Arguments
+    =========
+    df: pandas dataframe
+    
+    Returns
+    =======
+    None
+
+
+    A high level summary of the dataframe
+    '''
+
+    st.subheader('First 5 Features')
+    st.write(df.head())
+    st.subheader('Columns Present')
+    st.write(df.columns)
+    st.subheader('Info')
+    buffer = io.StringIO()
+    df.info(buf=buffer)
+    s = buffer.getvalue()
+    st.text(s)
+
+def check_duplicated(df):
+
+    '''
+    Helper function that highlights the duplicated values within the dataframe
+    Arguments
+    =========
+    df: pandas dataframe
+
+    Returns
+    =======
+    None 
+
+    Shows the duplicated values present within the dataframe
+    '''
+
+    if len(df[df.duplicated()]) > 0:
+        st.write("No. of duplicated entries: ", len(df[df.duplicated()]))
+        st.write("### Duplicated values")
+        st.write(df[df.duplicated(keep=False)].sort_values(by=list(df.columns)))
+    else:
+        st.write("No duplicated entries found")
+
 
 def missing_values_table(df):
-        # Total missing values
-        mis_val = df.isnull().sum()
-        
-        # Percentage of missing values
-        mis_val_percent = 100 * df.isnull().sum() / len(df)
-        
-        # Make a table with the results
-        mis_val_table = pd.concat([mis_val, mis_val_percent], axis=1)
-        
-        # Rename the columns
-        mis_val_table_ren_columns = mis_val_table.rename(
-        columns = {0 : 'Missing Values', 1 : '% of Total Values'})
-        
-        # Sort the table by percentage of missing descending
-        mis_val_table_ren_columns = mis_val_table_ren_columns[
-            mis_val_table_ren_columns.iloc[:,1] != 0].sort_values(
-        '% of Total Values', ascending=False).round(1)
-        
-        # Print some summary information
-        st.write ("Your selected dataframe has " + str(df.shape[1]) + " columns and a total of "+str(df.shape[0])+" values\n"      
-            "There are " + str(mis_val_table_ren_columns.shape[0]) +
-              " columns that have missing values.")
-                      
-        # Return the dataframe with missing information
-        return mis_val_table_ren_columns
+
+    '''
+    Helper function that provides information on the rows that contain missing values within the dataframe
+
+    Arguments
+    =========
+    df: pandas dataframe
+    
+    Returns
+    =======
+    mis_val_table_ren_columns: A dataframe that contains the columns with missing values and how many are missing 
+                               compared to the entire dataframe  
+
+    '''
+
+    # Total missing values
+    mis_val = df.isnull().sum()
+    
+    # Percentage of missing values
+    mis_val_percent = 100 * df.isnull().sum() / len(df)
+    
+    # Make a table with the results
+    mis_val_table = pd.concat([mis_val, mis_val_percent], axis=1)
+    
+    # Rename the columns
+    mis_val_table_ren_columns = mis_val_table.rename(
+    columns = {0 : 'Missing Values', 1 : '% of Total Values'})
+    
+    # Sort the table by percentage of missing descending
+    mis_val_table_ren_columns = mis_val_table_ren_columns[
+        mis_val_table_ren_columns.iloc[:,1] != 0].sort_values(
+    '% of Total Values', ascending=False).round(1)
+    
+    # Print some summary information
+    st.write ("Your selected dataframe has " + str(df.shape[1]) + " columns and a total of "+str(df.shape[0])+" values\n"      
+        "There are " + str(mis_val_table_ren_columns.shape[0]) +
+            " columns that have missing values.")
+                    
+    # Return the dataframe with missing information
+    return mis_val_table_ren_columns
+
+def visualize_missing_values(df):
+    
+    '''
+    Helper function that shows the relative position of the missing values
+
+    Arguments
+    =========
+    df: pandas dataframe
+   
+    Returns
+    =======
+    None
+
+    Comments
+    ========
+    Shows a heatmap of the missing values along with where these values are located with respect to the entire dataframe
+
+    '''
+    st.write("### Where are the missing values located")
+    st.write(msno.matrix(df)) 
+    st.pyplot() 
+    # Visualize missing values as a heatmap 
+    st.write("### Heatmap of the missing values")
+    st.write(msno.heatmap(df))
+    st.pyplot() 
 
 #@st.cache(allow_output_mutation=True)
 def find_target(target_name):
@@ -121,8 +231,99 @@ def find_target(target_name):
         target=df[target_name]
         return target
 
+def check_data_type(df):
+
+    '''
+    Helper function that shows the data type of the dataframe
+    Arguments
+    =========
+    df: pandas dataframe
+    
+    Returns
+    =======
+    None
+
+    Comments
+    ========
+    Shows the data type, the number of unique values and the first value (to validate the data type) of each column in the dataframe
+    '''
+
+    interesting= pd.DataFrame(df.dtypes,columns=["Data_Type"])
+    interesting["First_value"]=df.iloc[0,:]
+    unique_values= df.nunique()
+    interesting["Unique_values"]=unique_values
+    st.write(interesting)
+
+def column_analysis(df):
+
+    '''
+    Helper function that gives a quick summary of each column of the data
+    Arguments
+    =========
+    df: pandas dataframe
+    
+    Returns
+    =======
+    None
+
+    Comments
+    ========
+    Prints the Unique values as a dataframe and as a bar graph. 
+    If there are too many or too few unique values, it skips the graph
+    '''
+
+    st.write("### Unique Values")
+    unique_values= df.nunique()
+    st.write(unique_values)
+    num_rows = len(df.index)
+    low_information_cols = [] #
+    st.write("### Individual column analysis")
+    st.write("If there isn't a data frame for a column, it implies that the values in said column is either too custered or too sparse (i.e. It has low information)")
+    for col in df.columns:
+
+        cnts = df[col].value_counts(dropna=False)
+        top_pct = (cnts/num_rows).iloc[0]
+        
+        if top_pct< .10:
+            st.write("Column {0} has low information".format(col))
+            low_information_cols.append(col)
+            continue
+
+        if top_pct < 0.85 and top_pct > 0.10:
+            low_information_cols.append(col)
+            st.write('Column: {0}       Most populated value: {1}  which covers {2:.5f}% of the column'.format(col,cnts.index[0], top_pct*100))
+            st.write(cnts)
+            st.write('\n')
+    
+
+        plt.figure()
+        plt.title(f'{col} - {unique_values[col]} unique values')
+        plt.ylabel('Count');
+        values=pd.value_counts(df[col]).plot.bar()
+        plt.xticks(rotation = 75);
+        st.pyplot() 
+    st.write("Columns with low information are:")
+    st.write(np.setdiff1d(df.columns,low_information_cols))
+
+
 #@st.cache()
 def seperate_features():
+
+    '''
+    Sepereate the categorical, numeric and date-time features of the dataframe
+    
+    Arguments
+    =========
+    None
+    
+    Returns
+    =======
+    None
+    
+    Comments
+    ========
+    Seperates the respective features 
+    '''
     global df
     global df_numeric
     global df_categorical
@@ -132,6 +333,14 @@ def seperate_features():
     df_categorical=df.select_dtypes(exclude=['float64', 'int64','datetime64'])
     pass
 
+def get_column_types(df_categorical,df_numeric,df_date): 
+    st.write("### Numierc Features")
+    st.write(df_numeric.head())
+    st.write("### Categorical Features")
+    st.write(df_categorical.head())
+    st.write("### Date-time features")
+    st.write(df_date.head())
+    st.text(f"The following columns were categorized as: \n numeric: {df_numeric.columns}\n categroical: {df_categorical.columns}\n date-time: {df_date.columns}\n")
 
 
 def categorical_summarized(dataframe, x=None, y=None, hue=None, palette='Set1', ax=None, order=None, verbose=True):
@@ -200,6 +409,54 @@ def quantitative_summarized(dataframe, x=None, y=None, hue=None, palette='Set1',
     st.pyplot()
     st.write('\n'+'#'*80+'\n')
 
+def time_summarized(data,x):
+
+    '''
+    Helper function that gives a quick summary of a given column of time data
+    Arguments
+    =========
+    data: pandas dataframe
+    x: str. horizontal axis to plot the labels of the time data
+    
+    Returns
+    =======
+    Quick Stats of the data and also the count plot
+    '''
+    
+    combined_df= pd.DataFrame(columns=["name","value_counts","describe","mode"])
+    name_value=x
+
+    dataframe=pd.DataFrame() 
+    dataframe[name_value+'_year'] = data[name_value].dt.year
+    dataframe[name_value+'_month'] = data[name_value].dt.month
+    dataframe[name_value+'_week'] = data[name_value].dt.week
+    dataframe[name_value+'_day'] = data[name_value].dt.day
+    dataframe[name_value+'_hour'] = data[name_value].dt.hour
+    dataframe[name_value+'_minute'] = data[name_value].dt.minute
+    dataframe[name_value+'_dayofweek'] = data[name_value].dt.dayofweek
+
+
+    for col1 in ['_year','_month','_week','_day','_hour','_minute','_dayofweek']:
+        count_value=dataframe[name_value+col1].value_counts()
+        describe_value=dataframe[name_value+col1].describe()
+        mode_value=dataframe[name_value+col1].mode()
+        a=pd.Series([col1,count_value,describe_value,mode_value],index=["name","value_counts","describe","mode"])
+        combined_df=combined_df.append(a,ignore_index=True)
+
+    display(combined_df.head(7))
+
+    categorical_vars=dataframe.columns.tolist()
+    num_plots = len(categorical_vars)
+    total_cols = 3
+    total_rows = num_plots//total_cols + 1
+    fig, axs = plt.subplots(nrows=total_rows, ncols=total_cols,
+                            figsize=(12*total_cols, 10*total_rows), constrained_layout=False)
+    fig.suptitle('Date features for '+col)
+    for i, var in enumerate(categorical_vars):
+        row = i//total_cols
+        pos = i % total_cols
+        plot = sns.countplot(x=var, data=dataframe, ax=axs[row][pos])
+        
 
 def eda_analysis():
 
@@ -231,23 +488,10 @@ def eda_analysis():
 
 
     if st.button('Initial features'):
-        st.subheader('First 5 Features')
-        st.write(df.head())
-        st.subheader('Columns Present')
-        st.write(df.columns)
-        st.subheader('Info')
-        buffer = io.StringIO()
-        df.info(buf=buffer)
-        s = buffer.getvalue()
-        st.text(s)
+        initial_features(df)
         
     if st.button('Check for duplicated values'):
-        if len(df[df.duplicated()]) > 0:
-            st.write("No. of duplicated entries: ", len(df[df.duplicated()]))
-            st.write("### Duplicated values")
-            st.write(df[df.duplicated(keep=False)].sort_values(by=list(df.columns)))
-        else:
-            st.write("No duplicated entries found")
+        check_duplicated(df)
 
     # if st.checkbox('Drop Duplicates?'):
     #     #Drop the duplicate
@@ -275,13 +519,8 @@ def eda_analysis():
     if st.button('Visualize missing values'):
         # Visualize missing values as a matrix 
         # Checks if the missing values are localized
-        st.write("### Where are the missing values located")
-        st.write(msno.matrix(df)) 
-        st.pyplot() 
-        # Visualize missing values as a heatmap 
-        st.write("### Heatmap of the missing values")
-        st.write(msno.heatmap(df))
-        st.pyplot() 
+        visualize_missing_values(df)
+
     # if st.button("(1) Drop Missing Rows"):
     #     st.write(1)
 
@@ -292,60 +531,12 @@ def eda_analysis():
     #     st.write(1)
 
 
-    st.info('Make sure you define the target variable for bivariate classification')
-    if st.checkbox('Find the target variable'):
-        if (files.loc[option_index,'name'].item() == "<Experimental Reading data>") and (files.loc[option_index,'target'].item()=="Find your target variable"):
-            st.write(df.head())
-            st.write("Search for the target variable from your dataset")
-        else:
-            st.write("For this dataset, it is {0}".format(files.loc[option_index,'target'].item()) )
-        target_name = st.text_input("Enter the target name",files.loc[option_index,'target'].item())
-        target=find_target(target_name)
-        st.write("Target: ",target_name)
-        st.write("Target type: ",type(target))
-        st.write("### Overview")
-        st.write(target.head())
 
     if st.button("Check the data type of each column with an example"):
-        interesting= pd.DataFrame(df.dtypes,columns=["Data_Type"])
-        interesting["First_value"]=df.iloc[0,:]
-        unique_values= df.nunique()
-        interesting["Unique_values"]=unique_values
-        st.write(interesting)
+        check_data_type(df)
 
     if st.button('Column-wise analysis'):
-        st.write("### Unique Values")
-        unique_values= df.nunique()
-        st.write(unique_values)
-        num_rows = len(df.index)
-        low_information_cols = [] #
-        st.write("### Individual column analysis")
-        st.write("If there isn't a data frame for a column, it implies that the values in said column is either too custered or too sparse (i.e. It has low information)")
-        for col in df.columns:
-
-            cnts = df[col].value_counts(dropna=False)
-            top_pct = (cnts/num_rows).iloc[0]
-            
-            if top_pct< .10:
-                st.write("Column {0} has low information".format(col))
-                low_information_cols.append(col)
-                continue
-
-            if top_pct < 0.85 and top_pct > 0.10:
-                low_information_cols.append(col)
-                st.write('Column: {0}       Most populated value: {1}  which covers {2:.5f}% of the column'.format(col,cnts.index[0], top_pct*100))
-                st.write(cnts)
-                st.write('\n')
-        
-
-            plt.figure()
-            plt.title(f'{col} - {unique_values[col]} unique values')
-            plt.ylabel('Count');
-            values=pd.value_counts(df[col]).plot.bar()
-            plt.xticks(rotation = 75);
-            st.pyplot() 
-        st.write("Columns with low information are:")
-        st.write(np.setdiff1d(df.columns,low_information_cols))
+        column_analysis(df)
 
 
 
@@ -366,24 +557,35 @@ def eda_analysis():
     # if st.button("Drop the target variable from the dataframe <Pending>"):
     #     pass
 
-    df_numeric=df.select_dtypes(include=['float64', 'int64'])
-    df_date=df.select_dtypes(include=['datetime64'])
-    df_categorical=df.select_dtypes(exclude=['float64', 'int64','datetime64'])
-    
-    
 
+
+    seperate_features()
+    # df_numeric=df.select_dtypes(include=['float64', 'int64'])
+    # df_date=df.select_dtypes(include=['datetime64'])
+    # df_categorical=df.select_dtypes(exclude=['float64', 'int64','datetime64'])
     
-    if st.button("Get numeric, categorical and datetime features"):
-        st.write("### Numierc Features")
-        st.write(df_numeric.head())
-        st.write("### Categorical Features")
-        st.write(df_categorical.head())
-        st.write("### Date-time features")
-        st.write(df_date.head())
-        st.text(f"The following columns were categorized as: \n numeric: {df_numeric.columns}\n categroical: {df_categorical.columns}\n date-time: {df_date.columns}\n")
         
+    if st.button("Get numeric, categorical and datetime features"):
+        get_column_types(df_categorical,df_numeric,df_date)       
     # if st.button("Remove extra white space in text columns <Pending>"):
     #     pass
+    st.write("### Define the target variable")
+    st.write("")
+    st.info('Make sure you define the target variable for bivariate classification')
+    if st.checkbox('Find the target variable'):
+        st.info("")
+        if (files.loc[option_index,'name'].item() == "<Experimental Reading data>") and (files.loc[option_index,'target'].item()=="Find your target variable"):
+            st.write(df.head())
+            st.write("Search for the target variable from your dataset")
+        else:
+            st.write("For this dataset, it is {0}".format(files.loc[option_index,'target'].item()) )
+        target_name = st.text_input("Enter the target name",files.loc[option_index,'target'].item())
+        target=find_target(target_name)
+        st.write("Target: ",target_name)
+        st.write("Target type: ",type(target))
+        st.write("### Overview")
+        st.write(target.head())
+
     st.markdown("## Categorical columns")
 
     if st.button("Information on categorical columns"):
@@ -409,7 +611,7 @@ def eda_analysis():
 
 
     if (categorical_selector=="Bivariate analysis of categorical feature"):
-        st.write("**Make sure that you have defined the target variable**")
+        st.info("**Make sure that you have defined the target variable from the checkbox above**")
         categorical_option=st.selectbox("Choose which column",categorical_names)
         if (categorical_option=="All columns"):
             for col in df_categorical.columns:
@@ -437,7 +639,12 @@ def eda_analysis():
     st.write(df_date.head())
     if st.button("All functions <Pending>"):
         st.write("Still working on extracting dates {since they are not always a date64 data type}. Would love some advice on this")
-
+### I tried to implement a date-time analysis- Any insights would be greatly appreciated    
+    # df_time=pd.DataFrame()
+    # df_time[['datetime','date_of_birth']]=df[['datetime','date_of_birth']]
+    # df_time=df_time.apply(pd.to_datetime)
+    # for col in df_time:
+    #   time_summarized(df_time,x=col)
 
     st.markdown("## Numeric columns")
 
@@ -447,7 +654,7 @@ def eda_analysis():
         df_numeric.hist(figsize=(20, 20), bins=10, xlabelsize=8, ylabelsize=8);
         st.pyplot() 
     
-    numeric_selector= st.radio("Choose what type of numeric analysis to conduct:",["Select one of the three", "Univariate analysis of numeric feature","Bivariate analysis of numeric feature","Multivariate variate analysis of numeric feature"])
+    numeric_selector= st.radio("Choose what type of numeric analysis to conduct:",["Select one of the two", "Univariate analysis of numeric feature","Bivariate analysis of numeric feature"])
     numeric_names=df_numeric.columns.tolist()
     numeric_names.append("All columns")
     if (numeric_selector=="Univariate analysis of numeric feature"):
@@ -460,7 +667,7 @@ def eda_analysis():
 
 
     if (numeric_selector=="Bivariate analysis of numeric feature"):
-        st.write("**Make sure that you have defined the target variable**")
+        st.info("**Make sure that you have defined the target variable from the checkbox above**")
         numeric_option=st.selectbox("Choose which column",numeric_names)
         if (numeric_option=="All columns"):
             for col in df_numeric.columns:
@@ -468,10 +675,12 @@ def eda_analysis():
         else:
             quantitative_summarized(dataframe= df_numeric, y = numeric_option, palette=c_palette, x = target, verbose=False)
         
-    if (numeric_selector=="Multivariate variate analysis of numeric feature"):
-        var1 = st.text_input("Enter the first variable")
-        var2 = st.text_input("Enter the second variable")
-        quantitative_summarized(dataframe= df_numeric, y = var1, x = var2, hue = target, palette=c_palette3, verbose=False)
+    # if (numeric_selector=="Multivariate variate analysis of numeric feature"):
+    #     st.info("**Make sure that you have defined the target variable from the checkbox above**")
+    #     st.write(df_numeric.head())
+    #     var1 = st.text_input("Enter the first variable")
+    #     var2 = st.text_input("Enter the second variable")
+    #     quantitative_summarized(dataframe= df_numeric, y = var1, x = var2, hue = target, palette=c_palette3, verbose=False)
 
     if st.button("Target details"):
         st.write(target.name)
