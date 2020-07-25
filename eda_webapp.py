@@ -469,8 +469,12 @@ def eda_analysis():
     # Utilizing a documentation platform to see all the changes we would be using (Useful for pipelining)
    
 
-
-    st.subheader('Data Input')
+    st.write("")
+    st.write("")
+    st.write("This streamlined EDA shows a high-level analysis of your data, with just a few clicks!")
+    st.write("The datasets below have their own unique attributes that touch on specific concepts that I wanted to highlight.")
+    st.info('NOTE: You can also upload your own CSV data to play around with through the <Experimental Reading Data> option below')
+    st.write('## Data Input')
     #read_file()
     option = st.selectbox(
         'Choose which type of data',files.name)
@@ -741,11 +745,7 @@ def confirm_options(df_categorical,df_numeric,df_date,categorical_name_options,n
 if __name__ == "__main__":
     #st.info('Do look at the menu at the left for the various projects')
     st.write("# Streamlined EDA")
-    st.write("")
-    st.write("")
-    st.write("This streamlined EDA shows a high-level analysis of your data, with just a few clicks!")
-    st.write("The datasets below have their own unique attributes that touch on specific concepts that I wanted to highlight.")
-    st.info('NOTE: You can also upload your own CSV data to play around with through the <Experimental Reading Data> option below')
+    
     
 
     eda_analysis()
