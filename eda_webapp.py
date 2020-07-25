@@ -585,6 +585,8 @@ def eda_analysis():
         st.write("Target type: ",type(target))
         st.write("### Overview")
         st.write(target.head())
+        st.write(target.value_counts())
+        
 
     st.markdown("## Categorical columns")
 
@@ -647,6 +649,12 @@ def eda_analysis():
     #   time_summarized(df_time,x=col)
 
     st.markdown("## Numeric columns")
+    colsize=len(df_numeric.columns)
+    if st.button("Correlation matrix"):
+        plt.figure(figsize=(colsize,colsize))
+        sns.heatmap(df_numeric.corr(), annot = True)
+        st.pyplot()
+
 
     if st.button("Initial numeric features"):
         st.write("### Numeric Overviews")
@@ -682,12 +690,8 @@ def eda_analysis():
     #     var2 = st.text_input("Enter the second variable")
     #     quantitative_summarized(dataframe= df_numeric, y = var1, x = var2, hue = target, palette=c_palette3, verbose=False)
 
-    if st.button("Target details"):
-        st.write(target.name)
-        st.write(type(target))
-        st.write(target.value_counts())
-    st.write()
-    st.write()
+    st.write("")
+    st.write("")
     
     if st.button("You're done!! Click here to celebrate"):    
         st.balloons()
@@ -736,4 +740,13 @@ def confirm_options(df_categorical,df_numeric,df_date,categorical_name_options,n
 
 #     return(df_categorical,df_numeric,df_date)
 if __name__ == "__main__":
+    #st.info('Do look at the menu at the left for the various projects')
+    st.write("# Streamlined EDA")
+    st.write("")
+    st.write("")
+    st.write("This streamlined EDA shows a high-level analysis of your data, with just a few clicks!")
+    st.write("The datasets below have their own unique attributes that touch on specific concepts that I wanted to highlight.")
+    st.info('NOTE: You can also upload your own CSV data to play around with through the <Experimental Reading Data> option below')
+    
+
     eda_analysis()
