@@ -573,10 +573,9 @@ def eda_analysis():
     st.write("")
     st.info('Make sure you define the target variable for bivariate classification')
     if st.checkbox('Find the target variable'):
-        st.info("")
         if (files.loc[option_index,'name'].item() == "<Experimental Reading data>") and (files.loc[option_index,'target'].item()=="Find your target variable"):
+            st.info("Search for the target variable from your dataset")
             st.write(df.head())
-            st.write("Search for the target variable from your dataset")
         else:
             st.write("For this dataset, it is {0}".format(files.loc[option_index,'target'].item()) )
         target_name = st.text_input("Enter the target name",files.loc[option_index,'target'].item())
