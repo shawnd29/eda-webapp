@@ -51,7 +51,7 @@ target=pd.Series()
 files1={'file_name':["bank-additional-full.csv","shelter_cat_outcome_eng.csv","diabetes data.csv","googleplaystore.csv","<Experimental Reading data>"],
         'name':["Bank information","Cat Shelter information","Diabetes information","Google Playstore","<Experimental Reading data>"],
         'target':["y","outcome_type","Diabetes","","Find your target variable"],
-        'description':["This is a relatively cleaned dataset with balanced categorical and numeric values.","This dataset focuses on missing values.","This dataset contains numeric-heavy features.",
+        'description':["This is a relatively cleaned dataset with balanced categorical and numeric values.","This dataset focuses on missing and date-time values.","This dataset contains numeric-heavy features.",
         "This dataset contains categorical- heavy features with no target variable.","This dataset shows how you could locally add your own data to explore"]   }
 
 files=pd.DataFrame(files1)
@@ -342,6 +342,64 @@ def get_column_types(df_categorical,df_numeric,df_date):
     st.write(df_date.head())
     st.text(f"The following columns were categorized as: \n numeric: {df_numeric.columns}\n categroical: {df_categorical.columns}\n date-time: {df_date.columns}\n")
 
+#@st.cache(allow_output_mutation=True)
+def choose_data_types():
+    
+    '''
+    Helper function that lets a user choose the colums for their respective data type
+    Arguments
+    =========
+    None
+    
+    Returns
+    =======
+    None
+
+    Comments
+    ==========
+    This highlights the categorical, numeric and date-time variables present
+    '''
+
+    global df
+    global df_categorical,df_numeric,df_date
+    categorical_name_options = st.multiselect(
+    'Choose your categorical variables',
+        df.columns.tolist(),
+        df_categorical.columns.tolist())
+    st.write('You selected:', df[categorical_name_options].head())
+
+    numeric_name_options = st.multiselect(
+    'Choose your  Numeric variables',
+        df.columns.tolist(),
+        df_numeric.columns.tolist())
+    st.write('You selected:', df[numeric_name_options].head())
+
+    datetime_name_options = st.multiselect(
+    'Choose your  Datetime variables',
+        df.columns.tolist(),
+        df_date.columns.tolist())
+    st.write('You selected:',  df[datetime_name_options].head())
+
+    st.write("")
+    st.write("")
+    st.warning("Make sure that you confirm the changes")
+    if not st.checkbox("Confirm options?"):
+        return 
+    confirm_options(categorical_name_options,numeric_name_options,datetime_name_options)
+    pass
+
+#@st.cache(allow_output_mutation=True)
+def confirm_options(categorical_name_options,numeric_name_options,datetime_name_options):
+    global df_categorical,df_numeric,df_date
+    df_categorical=df[categorical_name_options]
+    df_numeric=df[numeric_name_options]
+    df_date=df[datetime_name_options]
+    st.text(f"The following columns were categorized as: \n numeric: {df_numeric.columns}\n categroical: {df_categorical.columns}\n date-time: {df_date.columns}\n")
+    # st.write("Categorical columns:",df_categorical.columns.tolist())
+    # st.write("Numeric columns:",df_numeric.columns.tolist())
+    # st.write("Date columns:",df_date.columns.tolist())
+    return df_categorical,df_numeric,df_date
+
 
 def categorical_summarized(dataframe, x=None, y=None, hue=None, palette='Set1', ax=None, order=None, verbose=True):
     '''
@@ -422,7 +480,20 @@ def time_summarized(data,x):
     =======
     Quick Stats of the data and also the count plot
     '''
-    
+    bg_color = (0.25, 0.25, 0.25)
+    sns.set(rc={"font.style":"normal",
+            "axes.facecolor":bg_color,
+            "figure.facecolor":bg_color,
+            "text.color":"black",
+            "xtick.color":"black",
+            "ytick.color":"black",
+            "axes.labelcolor":"black",
+            "axes.grid":False,
+            'axes.labelsize':50,
+            'figure.figsize':(20.0, 10.0),
+            'xtick.labelsize':25,
+            'ytick.labelsize':20,
+            "figure.titlesize":72})
     combined_df= pd.DataFrame(columns=["name","value_counts","describe","mode"])
     name_value=x
 
@@ -443,20 +514,20 @@ def time_summarized(data,x):
         a=pd.Series([col1,count_value,describe_value,mode_value],index=["name","value_counts","describe","mode"])
         combined_df=combined_df.append(a,ignore_index=True)
 
-    display(combined_df.head(7))
+    st.write(combined_df.head(7))
 
     categorical_vars=dataframe.columns.tolist()
     num_plots = len(categorical_vars)
-    total_cols = 3
+    total_cols = 2
     total_rows = num_plots//total_cols + 1
     fig, axs = plt.subplots(nrows=total_rows, ncols=total_cols,
-                            figsize=(12*total_cols, 10*total_rows), constrained_layout=False)
-    fig.suptitle('Date features for '+col)
+                            figsize=(20*total_cols, 20*total_rows), constrained_layout=False)
+    fig.suptitle('Date features for '+x)
     for i, var in enumerate(categorical_vars):
         row = i//total_cols
         pos = i % total_cols
         plot = sns.countplot(x=var, data=dataframe, ax=axs[row][pos])
-        
+    st.pyplot()
 
 def eda_analysis():
 
@@ -473,9 +544,11 @@ def eda_analysis():
     st.write("")
     st.write("This streamlined EDA shows a high-level analysis of your data, with just a few clicks!")
     st.write("The datasets below have their own unique attributes that touch on specific concepts that I wanted to highlight.")
-    st.info('NOTE: You can also upload your own CSV data to play around with through the <Experimental Reading Data> option below')
+    st.write("")
+
     st.write('## Data Input')
     #read_file()
+    st.info('NOTE: You can also upload your own CSV data to play around with through the <Experimental Reading Data> option below')
     option = st.selectbox(
         'Choose which type of data',files.name)
     st.write("You have chosen "+option)
@@ -491,10 +564,10 @@ def eda_analysis():
 
 
 
-    if st.button('Initial features'):
+    if st.button('1. Initial features'):
         initial_features(df)
         
-    if st.button('Check for duplicated values'):
+    if st.button('2. Check for duplicated values'):
         check_duplicated(df)
 
     # if st.checkbox('Drop Duplicates?'):
@@ -515,12 +588,12 @@ def eda_analysis():
     # Function to calculate missing values by column# Funct 
 
 
-    if st.button('In-depth analysis on missing values'):
+    if st.button('3a. In-depth analysis on missing values'):
         missing_values = missing_values_table(df)
         st.write("### Missing value rows:")
         st.write(missing_values)
 
-    if st.button('Visualize missing values'):
+    if st.button('3b. Visualize missing values'):
         # Visualize missing values as a matrix 
         # Checks if the missing values are localized
         visualize_missing_values(df)
@@ -536,10 +609,10 @@ def eda_analysis():
 
 
 
-    if st.button("Check the data type of each column with an example"):
+    if st.button("4. Check the data type of each column with an example"):
         check_data_type(df)
 
-    if st.button('Column-wise analysis'):
+    if st.button('5. Column-wise analysis'):
         column_analysis(df)
 
 
@@ -569,7 +642,7 @@ def eda_analysis():
     # df_categorical=df.select_dtypes(exclude=['float64', 'int64','datetime64'])
     
         
-    if st.button("Get numeric, categorical and datetime features"):
+    if st.button("6. Get implied numeric, categorical and datetime features"):
         get_column_types(df_categorical,df_numeric,df_date)       
     # if st.button("Remove extra white space in text columns <Pending>"):
     #     pass
@@ -589,7 +662,16 @@ def eda_analysis():
         st.write("### Overview")
         st.write(target.head())
         st.write(target.value_counts())
-        
+    
+    st.write("### Finding the data variables") 
+    st.write("You can manually change the categorical, numeric and date-time variables")
+    if (files.loc[option_index,'name'].item() == "<Experimental Reading data>"):
+        st.info("You would need to manually extract the date-time variables yourself")   
+    if (option == "Cat Shelter information"):
+        st.info("The variables: date_of_birth and datetime  should be manually changed to date-time variables")   
+    
+    if st.checkbox("Choose data types"):
+         choose_data_types()
 
     st.markdown("## Categorical columns")
 
@@ -636,27 +718,27 @@ def eda_analysis():
 
 
     if st.button(" View Finalized Categorical columns"):
-        st.write(df_categorical.head(15))
+        st.write(df_categorical.head(10))
 
         
 
     st.markdown("## Date-time columns")
-    st.write(df_date.head())
-    if st.button("All functions <Pending>"):
-        st.write("Still working on extracting dates {since they are not always a date64 data type}. Would love some advice on this")
-### I tried to implement a date-time analysis- Any insights would be greatly appreciated    
-    # df_time=pd.DataFrame()
-    # df_time[['datetime','date_of_birth']]=df[['datetime','date_of_birth']]
-    # df_time=df_time.apply(pd.to_datetime)
-    # for col in df_time:
-    #   time_summarized(df_time,x=col)
+    
+    date_selector= st.radio("Choose what type of Date analysis to conduct:",["Select one:", "Breakdown of date features"])
+    df_date=df_date.apply(pd.to_datetime)
+    date_names= df_date.columns.tolist()
+    date_names.append("All columns")
+    if date_selector=='Breakdown of date features':
+        date_option=st.selectbox("Choose which column",date_names)
+        if (date_option=="All columns"):
+            for col in df_date.columns:
+                time_summarized(df_date,x=col)
+        else:
+            time_summarized(df_date,x=date_option)
+
+
 
     st.markdown("## Numeric columns")
-    colsize=len(df_numeric.columns)
-    if st.button("Correlation matrix"):
-        plt.figure(figsize=(colsize,colsize))
-        sns.heatmap(df_numeric.corr(), annot = True)
-        st.pyplot()
 
 
     if st.button("Initial numeric features"):
@@ -665,6 +747,12 @@ def eda_analysis():
         df_numeric.hist(figsize=(20, 20), bins=10, xlabelsize=8, ylabelsize=8);
         st.pyplot() 
     
+    colsize=len(df_numeric.columns)-5
+    if st.button("Correlation matrix"):
+        plt.figure(figsize=(15,15))
+        sns.heatmap(df_numeric.corr(), annot = True)
+        st.pyplot()
+
     numeric_selector= st.radio("Choose what type of numeric analysis to conduct:",["Select one of the two", "Univariate analysis of numeric feature","Bivariate analysis of numeric feature"])
     numeric_names=df_numeric.columns.tolist()
     numeric_names.append("All columns")
@@ -695,7 +783,8 @@ def eda_analysis():
 
     st.write("")
     st.write("")
-    
+
+
     if st.button("You're done!! Click here to celebrate"):    
         st.balloons()
 
@@ -703,49 +792,12 @@ def eda_analysis():
 #### This is an expereimental feature that I was trying to implement. It focuses on manually seperating the categorical, numeric and time-series data. 
 #### Any advice on this would be greatly beneficial
 
-def choose_data_types():
-    global df
-    global df_categorical,df_numeric,df_date
-    categorical_name_options = st.multiselect(
-    'Choose your categorical variables',
-        df.columns.tolist(),
-        df_categorical.columns.tolist())
-    st.write('You selected:', df[categorical_name_options].head())
 
-    numeric_name_options = st.multiselect(
-    'Choose your  Numeric variables',
-        df.columns.tolist(),
-        df_numeric.columns.tolist())
-    st.write('You selected:', df[numeric_name_options].head())
-
-    datetime_name_options = st.multiselect(
-    'Choose your  Datetime variables',
-        df.columns.tolist(),
-        df_date.columns.tolist())
-    st.write('You selected:',  df[datetime_name_options].head())
-
-    st.write("")
-    st.write("")
-    st.warning("Make sure that you confirm the changes")
-    if st.button("Confirm options?"):
-        df_categorical,df_numeric,df_date=confirm_options(df_categorical,df_numeric,df_date,categorical_name_options,numeric_name_options,datetime_name_options)
-        pass
-    else:
-        raise st.ScriptRunner.StopException
-
-
-#@st.cache(allow_output_mutation=True)
-def confirm_options(df_categorical,df_numeric,df_date,categorical_name_options,numeric_name_options,datetime_name_options):
-    df_categorical=df[categorical_name_options]
-    df_numeric=df[numeric_name_options]
-    df_date=df[datetime_name_options]
-    return df_categorical,df_numeric,df_date
 
 #     return(df_categorical,df_numeric,df_date)
 if __name__ == "__main__":
     #st.info('Do look at the menu at the left for the various projects')
     st.write("# Streamlined EDA")
-    
     
 
     eda_analysis()
