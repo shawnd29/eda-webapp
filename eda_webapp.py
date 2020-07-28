@@ -281,7 +281,7 @@ def column_analysis(df):
     st.write("If there isn't a data frame for a column, it implies that the values in said column is either too custered or too sparse (i.e. It has low information)")
     for col in df.columns:
 
-        cnts = df[col].value_counts(dropna=False)
+        cnts = df[col].value_counts(dropna=True)
         top_pct = (cnts/num_rows).iloc[0]
         
         if top_pct< .10:
@@ -297,10 +297,12 @@ def column_analysis(df):
     
 
         plt.figure()
-        plt.title(f'{col} - {unique_values[col]} unique values')
+        
+        plt.title(f'{col} - {unique_values[col]} unique values',fontdict = {'fontsize' : 40})
         plt.ylabel('Count');
         values=pd.value_counts(df[col]).plot.bar()
         plt.xticks(rotation = 75);
+        plt.tight_layout()
         st.pyplot() 
     st.write("Columns with low information are:")
     st.write(np.setdiff1d(df.columns,low_information_cols))
@@ -489,11 +491,13 @@ def time_summarized(data,x):
             "ytick.color":"black",
             "axes.labelcolor":"black",
             "axes.grid":False,
-            'axes.labelsize':50,
+            'axes.labelsize':30,
             'figure.figsize':(20.0, 10.0),
-            'xtick.labelsize':25,
+            'xtick.labelsize':20,
             'ytick.labelsize':20,
-            "figure.titlesize":72})
+            'axes.titlesize':58,
+            'figure.autolayout': True
+            })
     combined_df= pd.DataFrame(columns=["name","value_counts","describe","mode"])
     name_value=x
 
@@ -662,6 +666,8 @@ def eda_analysis():
         st.write("### Overview")
         st.write(target.head())
         st.write(target.value_counts())
+        st.write(sns.countplot(x=target, data=df))
+        st.pyplot()
     
     st.write("### Finding the data variables") 
     st.write("You can manually change the categorical, numeric and date-time variables")

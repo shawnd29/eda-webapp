@@ -3,12 +3,22 @@ def hello():
     st.write("# Hello! :smile:")
     st.write("")
     st.write("")
+    st.info("Head over to the menu on the left for the EDA roadmap")
     st.write("## Aim")
     st.write("### This project was desgined to streamline the Exploratory Data Analysis (EDA) and Machine Learning commonly used in classification models")
     st.write("")
     st.write("## Backstory")
     st.write("A lot of times, getting a high level analysis takes time to code and develop, and generally follows a linear path.")
     st.write("This project was designed to streamline that process and eventually build a baseline machine learning model as a citizen data scientist")
+    st.write("")
+    st.write("")
+    st.write("## A little bit about me:")
+    st.write("My name is Shawn D'Souza and I recently graduated with my Masters of Science in Data Science.")
+    st.write("When I am not learning a new recipe to cook, I would be building on some interesting concepts within the data and analytics domain. ")
+    st.write("Currently, I am volunteering for a charity organization to raise awareness form an online platform in Sierra Leone.")
+    st.write("")
+    st.write("For links to the Github Code, do visit:   https://github.com/shawnd29/eda-webapp" )
+    st.write("To recommend any suggestions, do reach out to me thorugh LinkenIn:  https://www.linkedin.com/in/shawn-dsouza/")
     st.write("")
     st.write("")
     st.write("## References")
@@ -29,18 +39,11 @@ def hello():
 
     st.write("")
     st.write("")
-    st.write("To get started, head over through the menu on the left.")
+    st.write("To get started, head over to the menu on the left.")
     st.write("")
     st.write("")
 
-    st.write("## A little bit about me:")
-    st.write("Thanks for scrolling all the way down!")
-    st.write("My name is Shawn D'Souza and I recently graduated with my Masters of Science in Data Science.")
-    st.write("When I am not learning a new recipe to cook, I would be building on some interesting concepts within the data and analytics domain. ")
-    st.write("Currently, I am volunteering for a charity organization to raise awareness form an online platform in Sierra Leone.")
-    st.write("")
-    st.write("For links to the Github Code, do visit:   https://github.com/shawnd29/eda-webapp" )
-    st.write("To recommend any suggestions, do reach out to me thorugh LinkenIn:  https://www.linkedin.com/in/shawn-dsouza/")
+
 
 
 
