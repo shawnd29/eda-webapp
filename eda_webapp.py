@@ -298,7 +298,7 @@ def column_analysis(df):
 
         plt.figure()
         
-        plt.title(f'{col} - {unique_values[col]} unique values',fontdict = {'fontsize' : 40})
+        plt.title(f'{col} - {unique_values[col]} unique values',fontdict = {'fontsize' : 25})
         plt.ylabel('Count');
         values=pd.value_counts(df[col]).plot.bar()
         plt.xticks(rotation = 75);
