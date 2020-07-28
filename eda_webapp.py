@@ -491,11 +491,11 @@ def time_summarized(data,x):
             "ytick.color":"black",
             "axes.labelcolor":"black",
             "axes.grid":False,
-            'axes.labelsize':30,
+            'axes.labelsize':20,
             'figure.figsize':(20.0, 10.0),
             'xtick.labelsize':20,
             'ytick.labelsize':20,
-            'axes.titlesize':58,
+            'axes.titlesize':30,
             'figure.autolayout': True
             })
     combined_df= pd.DataFrame(columns=["name","value_counts","describe","mode"])
