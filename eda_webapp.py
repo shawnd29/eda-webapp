@@ -525,7 +525,7 @@ def time_summarized(data,x):
     total_cols = 2
     total_rows = num_plots//total_cols + 1
     fig, axs = plt.subplots(nrows=total_rows, ncols=total_cols,
-                            figsize=(20*total_cols, 20*total_rows), constrained_layout=False)
+                            figsize=(20*total_cols, 20*total_rows), constrained_layout=True)
     fig.suptitle('Date features for '+x)
     for i, var in enumerate(categorical_vars):
         row = i//total_cols
