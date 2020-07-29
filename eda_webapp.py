@@ -483,21 +483,21 @@ def time_summarized(data,x):
     Quick Stats of the data and also the count plot
     '''
     bg_color = (0.25, 0.25, 0.25)
-    sns.set(rc={"font.style":"normal",
-            "axes.facecolor":bg_color,
-            "figure.facecolor":bg_color,
-            "text.color":"black",
-            "xtick.color":"black",
-            "ytick.color":"black",
-            "axes.labelcolor":"black",
-            "axes.grid":False,
-            'axes.labelsize':20,
-            'figure.figsize':(20.0, 10.0),
-            'xtick.labelsize':20,
-            'ytick.labelsize':20,
-            'axes.titlesize':20,
-            'figure.autolayout': True
-            })
+    # #sns.set(rc={"font.style":"normal",
+    #         "axes.facecolor":bg_color,
+    #         "figure.facecolor":bg_color,
+    #         "text.color":"black",
+    #         "xtick.color":"black",
+    #         "ytick.color":"black",
+    #         "axes.labelcolor":"black",
+    #         "axes.grid":False,
+    #         'axes.labelsize':20,
+    #         'figure.figsize':(20.0, 10.0),
+    #         'xtick.labelsize':20,
+    #         'ytick.labelsize':20,
+    #         'axes.titlesize':20,
+    #         'figure.autolayout': True
+    #         })
     combined_df= pd.DataFrame(columns=["name","value_counts","describe","mode"])
     name_value=x
 
