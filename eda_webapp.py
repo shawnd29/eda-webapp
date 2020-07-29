@@ -298,7 +298,7 @@ def column_analysis(df):
 
         plt.figure()
         
-        plt.title(f'{col} - {unique_values[col]} unique values',fontdict = {'fontsize' : 25})
+        plt.title(f'{col} - {unique_values[col]} unique values',fontdict = {'fontsize' : 15})
         plt.ylabel('Count');
         values=pd.value_counts(df[col]).plot.bar()
         plt.xticks(rotation = 75);
@@ -495,7 +495,7 @@ def time_summarized(data,x):
             'figure.figsize':(20.0, 10.0),
             'xtick.labelsize':20,
             'ytick.labelsize':20,
-            'axes.titlesize':30,
+            'axes.titlesize':20,
             'figure.autolayout': True
             })
     combined_df= pd.DataFrame(columns=["name","value_counts","describe","mode"])
