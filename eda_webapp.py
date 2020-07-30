@@ -32,6 +32,23 @@ pd.set_option('expand_frame_repr', True)
 
 plt.style.use('seaborn-colorblind')
 
+bg_color = (0.25, 0.25, 0.25)
+sns.set(rc={"font.style":"normal",
+            "axes.facecolor":bg_color,
+            "figure.facecolor":bg_color,
+            "text.color":"black",
+            "xtick.color":"black",
+            "ytick.color":"black",
+            "axes.labelcolor":"black",
+            "axes.grid":False,
+            'axes.labelsize':30,
+            'figure.figsize':(20.0, 10.0),
+            'xtick.labelsize':20,
+            'ytick.labelsize':20,
+            'axes.titlesize':40,
+            'figure.autolayout': True
+            })
+
 #Color palette for Box plot
 c_palette = ['tab:blue', 'tab:orange']
 c_palette3 = ['tab:blue', 'tab:orange', 'tab:green']
@@ -298,7 +315,7 @@ def column_analysis(df):
 
         plt.figure()
         
-        plt.title(f'{col} - {unique_values[col]} unique values',fontdict = {'fontsize' : 15})
+        plt.title(f'{col} - {unique_values[col]} unique values',fontdict = {'fontsize' : 25})
         plt.ylabel('Count');
         values=pd.value_counts(df[col]).plot.bar()
         plt.xticks(rotation = 75);
@@ -432,6 +449,7 @@ def categorical_summarized(dataframe, x=None, y=None, hue=None, palette='Set1', 
     if (series.value_counts()).count()>50:
         st.write("Too many values to populate")
     else:
+        plt.figure(figsize=(15,15))
         sns.countplot(x=x, y=y, hue=hue, data=dataframe, palette=palette)
         plt.show()
         st.pyplot() 
@@ -483,7 +501,7 @@ def time_summarized(data,x):
     Quick Stats of the data and also the count plot
     '''
     bg_color = (0.25, 0.25, 0.25)
-    # #sns.set(rc={"font.style":"normal",
+    # sns.set(rc={"font.style":"normal",
     #         "axes.facecolor":bg_color,
     #         "figure.facecolor":bg_color,
     #         "text.color":"black",
@@ -495,7 +513,7 @@ def time_summarized(data,x):
     #         'figure.figsize':(20.0, 10.0),
     #         'xtick.labelsize':20,
     #         'ytick.labelsize':20,
-    #         'axes.titlesize':20,
+    #         'axes.titlesize':30,
     #         'figure.autolayout': True
     #         })
     combined_df= pd.DataFrame(columns=["name","value_counts","describe","mode"])
@@ -526,7 +544,7 @@ def time_summarized(data,x):
     total_rows = num_plots//total_cols + 1
     fig, axs = plt.subplots(nrows=total_rows, ncols=total_cols,
                             figsize=(20*total_cols, 20*total_rows), constrained_layout=True)
-    fig.suptitle('Date features for '+x)
+    fig.suptitle('Date features for '+x,size=50)
     for i, var in enumerate(categorical_vars):
         row = i//total_cols
         pos = i % total_cols
@@ -666,7 +684,7 @@ def eda_analysis():
         st.write("### Overview")
         st.write(target.head())
         st.write(target.value_counts())
-        st.write(sns.countplot(x=target, data=df))
+        sns.countplot(x=target, data=df)
         st.pyplot()
     
     st.write("### Finding the data variables") 
