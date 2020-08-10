@@ -2,10 +2,6 @@ import streamlit as st
 import pandas as pd
 #from pycaret.classification import *
 import classification_test as ct
-from streamlit import components
-import streamlit.components.v1 as components
-import ipywidgets as ipw
-from IPython.display import display, HTML, clear_output, update_display
 import numpy as np
 
 
@@ -356,7 +352,7 @@ def download_button(object_to_download, download_filename, button_text, pickle_i
 #     st.markdown(download_button(session_state.model, 'YOUR_MODEL.pkl', 'Click to download data!',pickle_it=True), unsafe_allow_html=True)
 
 
-# components.v1.html(compare_models(verbose = False))
+
 # st.write(a)
 # lda = create_model('lda')
 # tuned_lda = tune_model('lda')
