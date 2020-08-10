@@ -553,7 +553,6 @@ def time_summarized(data,x):
         row = i//total_cols
         pos = i % total_cols
         plot = sns.countplot(x=var, data=dataframe, ax=axs[row][pos])
-    plt.show()
     st.pyplot()
 
 def eda_analysis():
