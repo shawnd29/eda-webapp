@@ -1,5 +1,4 @@
 streamlit==0.64.0
-pywin32==223
 alembic==1.4.2
 argon2-cffi==20.1.0
 astropy==4.0.1.post1
@@ -117,6 +116,7 @@ python-dateutil==2.8.1
 python-editor==1.0.4
 pytz==2020.1
 PyWavelets==1.1.1
+pywin32==228
 pywinpty==0.5.7
 PyYAML==5.3.1
 pyzmq==19.0.2
