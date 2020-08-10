@@ -76,7 +76,8 @@ def create_model_function(estimator):
 
 def ml_analysis():
     
-    session_state = SessionState.get(df=None,target_name=None,setup_model=None,comparison_model=None,model=None,model_choice=None,best_model=None)
+    session_state = SessionState.get(df=None,target_name=None,setup_model=None,comparison_model=None,compare_models_=None,model=None,
+                                     model_results=None,model_choice=None,best_model=None)
 
     session_state.df=pd.DataFrame()
     #target=pd.Series()
@@ -136,13 +137,16 @@ def ml_analysis():
     st.table(session_state.setup_model[-1])
 
     st.write("")
-    st.write("### Compare Various Models")
+    st.write("### Compare Various Models <Optional>")
     st.write("This evaluates a few models at a high level with a 5 folds Cross Validatation")
+    if session_state.comparison_model == None:
+        st.write("Here are some of the models that the data will be evaluated on:")
+        st.write(ct.models()['Name'])
     if st.checkbox("Comapare models:"):        
         if session_state.comparison_model == None:
-            session_state.comparison_model,compare_models_=ct.compare_models(verbose = False, fold =5)
-            st.write("### Table of scores")
-            st.table(compare_models_)
+            session_state.comparison_model,session_state.compare_models_=ct.compare_models(verbose = False, fold =5)
+        st.write("### Table of scores")
+        st.table(session_state.compare_models_)
         st.write("### Best model with parameters")
         st.write(session_state.comparison_model)
         #X_test_ ,display_container = ct.predict_model(model)
@@ -171,24 +175,25 @@ def ml_analysis():
                     'MLP Classifier' : 'mlp',
                     'SVM - Radial Kernel' : 'rbfsvm'}
 
-        model_choice= st.selectbox("Choose your models",list(model_dict.keys()))
+        model_choice= st.selectbox("Choose your model",list(model_dict.keys()))
         st.write("Model Choice:"+ model_choice)
         if model_choice != "Choose a value":
             st.write(model_dict.get(model_choice))
             if session_state.model == None or session_state.model_choice !=model_choice:
-                session_state.model,model_results = create_model_function(model_dict.get(model_choice))
-                st.table(model_results)
+                session_state.model,session_state.model_results = create_model_function(model_dict.get(model_choice))
                 session_state.model_choice =model_choice
+            
+            st.table(session_state.model_results)
             st.write(session_state.model)
         
-        st.write("")
-        st.write("### Tune the model")
-        st.write("This can be use to further tune the model hyperparameters")
-        if st.checkbox("Tune the above model"):
+        # st.write("")
+        # st.write("### Tune the model")
+        # st.write("This can be use to further tune the model hyperparameters")
+        # if st.checkbox("Tune the above model"):
             
-            session_state.model,model_results = ct.tune_model(session_state.model)
-            st.table(model_results)
-            st.write(session_state.model)
+        #     session_state.model,model_results = ct.tune_model(session_state.model)
+        #     st.table(model_results)
+        #     st.write(session_state.model)
             ######
     
     st.write("")
@@ -236,7 +241,7 @@ def ml_analysis():
     st.write("This provides with some prediction metrics from some data that was held out for testing")   
     if st.button("Predict Model"):
         X_test_ ,display_container = ct.predict_model(session_state.model)
-        st.write(X_test_)
+        #st.write(X_test_)
         st.table(display_container[0])
         st.table(display_container[1])
 
