@@ -1,9 +1,5 @@
-seaborn==0.10.1
+
 streamlit==0.62.0
 missingno==0.4.2
-numpy==1.18.1
-scipy==1.4.1
-pandas==1.0.3
-matplotlib==3.3.0
 python_dateutil==2.8.1
 pycaret==2.0.0
