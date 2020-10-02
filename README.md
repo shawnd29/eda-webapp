@@ -27,11 +27,11 @@ Special thanks to [Streamlit](https://github.com/streamlit/streamlit), [Pycaret]
 ### Requirements:
 Streamlit <br/>
 Pycaret
-<p></p>
-
+<br/>
+<br/>
 To run the platfrom locally, download the repository locally and type:
 #### streamlit run app.py
-<p></p>
-
+<br/>
+<br/>
 To view the final product, do visit https://webapp-streamlined.herokuapp.com/
  
