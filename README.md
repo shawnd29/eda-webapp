@@ -24,13 +24,14 @@ Granular understanding of individual features|Rapid data preprocessing
 Special thanks to [Streamlit](https://github.com/streamlit/streamlit), [Pycaret](https://github.com/pycaret/pycaret) and [GitHub Pages themes](https://github.com/pages-themes/midnight) for their open-source platforms 
 
 
-###Requirements:
-Streamlit 
+### Requirements:
+Streamlit <br/>
 Pycaret
- 
-To run the platfrom locally, download the repository locally and type:
+<p></p>
 
+To run the platfrom locally, download the repository locally and type:
 #### streamlit run app.py
+<p></p>
 
 To view the final product, do visit https://webapp-streamlined.herokuapp.com/
  
