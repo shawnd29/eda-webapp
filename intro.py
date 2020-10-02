@@ -1,9 +1,8 @@
 import streamlit as st 
 def hello():
-    st.write("# Hello! :smile:")
+    st.write("# Thanks for checking out the project! :smile:")
     st.write("")
     st.write("")
-    st.info("Head over to the menu on the left for the EDA roadmap")
     st.write("## Aim")
     st.write("### This project was desgined to streamline the Exploratory Data Analysis (EDA) and Machine Learning commonly used in classification models")
     st.write("")
@@ -36,6 +35,7 @@ def hello():
     st.write("**Building Web applications in Streamlit** - https://awesome-streamlit.readthedocs.io/en/latest/")
     st.write("**Utilizing Machine Learning Models through Pycaret** - https://pycaret.org/classification/")
     st.write("** Deploying Streamlit on Heroku** - https://towardsdatascience.com/deploy-streamlit-on-heroku-9c87798d2088")
+    st.write("** Bulding Github Pages with Jekyll themes** - https://github.com/pages-themes/midnight")
 
     st.write("")
     st.write("")

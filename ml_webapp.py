@@ -125,11 +125,13 @@ def ml_analysis():
 
 # df = pd.read_csv("bank-additional-full.csv",sep=",")
 
-
+    if session_state.target_name == None:
+        st.error("Make sure to define the target variable")
 
     if session_state.setup_model == None:
         session_state.setup_model= ct.setup(session_state.df, target = session_state.target_name,silent=True,sampling=False,html=False)
         
+    
     st.write("")
     st.write("")
     st.write("### Inital model setup")
@@ -137,7 +139,11 @@ def ml_analysis():
     st.table(session_state.setup_model[-1])
 
     st.write("")
-    st.write("### Compare Various Models <Optional>")
+    st.write("### Compare Various Models <This is an optional step>")
+    st.write("")
+    st.info("This compares 18 classfication models and will take a lot of time to compute. ")
+    st.write("")
+    st.write("")
     st.write("This evaluates a few models at a high level with a 5 folds Cross Validatation")
     if session_state.comparison_model == None:
         st.write("Here are some of the models that the data will be evaluated on:")
@@ -223,19 +229,7 @@ def ml_analysis():
             ct.plot_model(session_state.model,plot=plot_dict.get(plot_options))
             st.pyplot()
 
-         #Tree interpretability   
-        # if st.checkbox("Interpret the tree-based model"):
-        #     # make a selection for tree-based models
-        #     allowed_models = ['RandomForestClassifier',
-        #                 'DecisionTreeClassifier',
-        #                 'ExtraTreesClassifier',
-        #                 'GradientBoostingClassifier',
-        #                 'XGBClassifier',
-        #                 'LGBMClassifier',
-        #                 'CatBoostClassifier']
-            
-        #     ct.plot_model(model)
-        #     st.pyplot()
+
     st.write("")
     st.write("### Model prediction")
     st.write("This provides with some prediction metrics from some data that was held out for testing")   

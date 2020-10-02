@@ -10631,7 +10631,8 @@ def predict_model(estimator,
             df_score = df_score.round(4)
             
             if verbose:
-                st.write(df_score)
+                #st.write(df_score)
+                pass
            
         label = pd.DataFrame(pred_)
         label.columns = ['Label']

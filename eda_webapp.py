@@ -569,7 +569,7 @@ def eda_analysis():
     st.write("")
     st.write("")
     st.write("This streamlined EDA shows a high-level analysis of your data, with just a few clicks!")
-    st.write("The datasets below have their own unique attributes that touch on specific concepts that I wanted to highlight.")
+    st.write("The toy datasets below have their own unique attributes which highlights several key concepts.")
     st.write("")
 
     st.write('## Data Input')
@@ -728,12 +728,15 @@ def eda_analysis():
     if (categorical_selector=="Bivariate analysis of categorical feature"):
         st.info("**Make sure that you have defined the target variable from the checkbox above**")
         categorical_option=st.selectbox("Choose which column",categorical_names)
-        if (categorical_option=="All columns"):
-            for col in df_categorical.columns:
-                categorical_summarized(df_categorical,y=col,hue=target)
-        else:
-            categorical_summarized(df_categorical,y=categorical_option,hue=target)
-
+        try:
+            if (categorical_option=="All columns"):
+            
+                for col in df_categorical.columns:
+                    categorical_summarized(df_categorical,y=col,hue=target)
+            else:
+                categorical_summarized(df_categorical,y=categorical_option,hue=target)
+        except:
+            st.error("Make sure that you have defined the target variable")
     # if st.button("Categorical Data Imputation <Pending>"):
     #     pass
 
@@ -796,12 +799,14 @@ def eda_analysis():
     if (numeric_selector=="Bivariate analysis of numeric feature"):
         st.info("**Make sure that you have defined the target variable from the checkbox above**")
         numeric_option=st.selectbox("Choose which column",numeric_names)
-        if (numeric_option=="All columns"):
-            for col in df_numeric.columns:
-                quantitative_summarized(dataframe= df_numeric, y = col, palette=c_palette, x = target, verbose=False)
-        else:
-            quantitative_summarized(dataframe= df_numeric, y = numeric_option, palette=c_palette, x = target, verbose=False)
-        
+        try: 
+            if (numeric_option=="All columns"):
+                for col in df_numeric.columns:
+                    quantitative_summarized(dataframe= df_numeric, y = col, palette=c_palette, x = target, verbose=False)
+            else:
+                quantitative_summarized(dataframe= df_numeric, y = numeric_option, palette=c_palette, x = target, verbose=False)
+        except:
+                st.error("Make sure that you have defined the target variable")
     # if (numeric_selector=="Multivariate variate analysis of numeric feature"):
     #     st.info("**Make sure that you have defined the target variable from the checkbox above**")
     #     st.write(df_numeric.head())

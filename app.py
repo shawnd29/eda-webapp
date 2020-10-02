@@ -2,9 +2,10 @@ import streamlit as st
 import intro
 import eda_webapp
 import ml_webapp
-
-page = st.sidebar.selectbox("Choose a page", ["Intro", "Data Exploration","Machine Learning"])
-if page=='Intro':
+st.title("RapidInsights")
+st.info("Do take a look at the menu on the left for additional choices")
+page = st.sidebar.selectbox("Choose a page", ["Data Exploration","Machine Learning","About the project"])
+if page=='About the project':
     intro.hello()
 if page=='Data Exploration':
     st.write('## **Streamined EDA**')
