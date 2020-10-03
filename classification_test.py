@@ -438,8 +438,7 @@ def setup(data,
     #exception checking   
     import sys
     
-    from pycaret.utils import __version__
-    ver = __version__()
+
 
     import logging
 
@@ -467,7 +466,6 @@ def setup(data,
     logger.addHandler(ch)
 
     logger.info("PyCaret Classification Module")
-    logger.info('version ' + str(ver))
     logger.info("Initializing setup()")
     logger.info("Checking Exceptions")
 
