@@ -1494,7 +1494,11 @@ def setup(data,
             Final display Starts
             '''
             clear_output()
-          
+            if profile:
+                print('Setup Succesfully Completed! Loading Profile Now... Please Wait!')
+            else:
+                if verbose:
+                    print('Setup Succesfully Completed!')
             
             functions = pd.DataFrame ( [ ['session_id', seed ],
                                          ['Target Type', target_type],
@@ -1549,7 +1553,14 @@ def setup(data,
                 else:
                     print(functions_.data)
             
-    
+            if profile:
+                try:
+                    import pandas_profiling
+                    pf = pandas_profiling.ProfileReport(data_before_preprocess)
+                    clear_output()
+                    display(pf)
+                except:
+                    print('Data Profiler Failed. No output to show, please continue with Modeling.')
             
             '''
             Final display Ends
@@ -1580,7 +1591,11 @@ def setup(data,
 
                 
             clear_output()
-            
+            if profile:
+                print('Setup Succesfully Completed! Loading Profile Now... Please Wait!')
+            else:
+                if verbose:
+                    print('Setup Succesfully Completed!')
                 
             functions = pd.DataFrame ( [ ['session_id', seed ],
                                          ['Target Type', target_type],
@@ -1636,6 +1651,14 @@ def setup(data,
                 else:
                     print(functions_.data)
             
+            if profile:
+                try:
+                    import pandas_profiling
+                    pf = pandas_profiling.ProfileReport(data_before_preprocess)
+                    clear_output()
+                    display(pf)
+                except:
+                    print('Data Profiler Failed. No output to show, please continue with Modeling.')
             
             '''
             Final display Ends
@@ -1664,7 +1687,11 @@ def setup(data,
         Final display Starts
         '''
         clear_output()
-      
+        if profile:
+            print('Setup Succesfully Completed! Loading Profile Now... Please Wait!')
+        else:
+            if verbose:
+                print('Setup Succesfully Completed!')
             
         functions = pd.DataFrame ( [ ['session_id', seed ],
                                      ['Target Type', target_type],
@@ -1719,7 +1746,15 @@ def setup(data,
             else:
                 print(functions_.data)
         
-       
+        if profile:
+            try:
+                import pandas_profiling
+                pf = pandas_profiling.ProfileReport(data_before_preprocess)
+                clear_output()
+                display(pf)
+            except:
+                print('Data Profiler Failed. No output to show, please continue with Modeling.')
+            
         '''
         Final display Ends
         '''   
@@ -3320,7 +3355,9 @@ def plot_model(estimator,
     
     #progress bar
     progress = ipw.IntProgress(value=0, min=0, max=5, step=1 , description='Processing: ')
-
+    if verbose:
+        if html_param:
+            display(progress)
     
     #ignore warnings
     import warnings
@@ -10407,3 +10444,4 @@ def set_config(variable,value):
 
     logger.info("Global variable:  " + str(variable) + ' updated')
     logger.info("set_config() succesfully completed")
+# Removed MLFlow
