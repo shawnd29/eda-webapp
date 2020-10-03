@@ -1494,11 +1494,7 @@ def setup(data,
             Final display Starts
             '''
             clear_output()
-            if profile:
-                print('Setup Succesfully Completed! Loading Profile Now... Please Wait!')
-            else:
-                if verbose:
-                    print('Setup Succesfully Completed!')
+          
             
             functions = pd.DataFrame ( [ ['session_id', seed ],
                                          ['Target Type', target_type],
@@ -1553,14 +1549,7 @@ def setup(data,
                 else:
                     print(functions_.data)
             
-            if profile:
-                try:
-                    import pandas_profiling
-                    pf = pandas_profiling.ProfileReport(data_before_preprocess)
-                    clear_output()
-                    display(pf)
-                except:
-                    print('Data Profiler Failed. No output to show, please continue with Modeling.')
+    
             
             '''
             Final display Ends
@@ -1591,11 +1580,7 @@ def setup(data,
 
                 
             clear_output()
-            if profile:
-                print('Setup Succesfully Completed! Loading Profile Now... Please Wait!')
-            else:
-                if verbose:
-                    print('Setup Succesfully Completed!')
+            
                 
             functions = pd.DataFrame ( [ ['session_id', seed ],
                                          ['Target Type', target_type],
@@ -1651,14 +1636,6 @@ def setup(data,
                 else:
                     print(functions_.data)
             
-            if profile:
-                try:
-                    import pandas_profiling
-                    pf = pandas_profiling.ProfileReport(data_before_preprocess)
-                    clear_output()
-                    display(pf)
-                except:
-                    print('Data Profiler Failed. No output to show, please continue with Modeling.')
             
             '''
             Final display Ends
@@ -1687,11 +1664,7 @@ def setup(data,
         Final display Starts
         '''
         clear_output()
-        if profile:
-            print('Setup Succesfully Completed! Loading Profile Now... Please Wait!')
-        else:
-            if verbose:
-                print('Setup Succesfully Completed!')
+      
             
         functions = pd.DataFrame ( [ ['session_id', seed ],
                                      ['Target Type', target_type],
@@ -1746,15 +1719,7 @@ def setup(data,
             else:
                 print(functions_.data)
         
-        if profile:
-            try:
-                import pandas_profiling
-                pf = pandas_profiling.ProfileReport(data_before_preprocess)
-                clear_output()
-                display(pf)
-            except:
-                print('Data Profiler Failed. No output to show, please continue with Modeling.')
-            
+       
         '''
         Final display Ends
         '''   
@@ -1775,93 +1740,7 @@ def setup(data,
 
     USI = secrets.token_hex(nbytes=2)
 
-    if logging_param:
-        
-        logger.info("Logging experiment in MLFlow")
-
-        import mlflow
-        from pathlib import Path
-
-        if experiment_name is None:
-            exp_name_ = 'clf-default-name'
-        else:
-            exp_name_ = experiment_name
-
-        URI = secrets.token_hex(nbytes=4)    
-        exp_name_log = exp_name_
-        
-        try:
-            mlflow.create_experiment(exp_name_log)
-        except:
-            pass
-
-        #mlflow logging
-        mlflow.set_experiment(exp_name_log)
-
-        run_name_ = 'Session Initialized ' + str(USI)
-
-        with mlflow.start_run(run_name=run_name_) as run:
-
-            # Get active run to log as tag
-            RunID = mlflow.active_run().info.run_id
-            
-            k = functions.copy()
-            k.set_index('Description',drop=True,inplace=True)
-            kdict = k.to_dict()
-            params = kdict.get('Value')
-            mlflow.log_params(params)
-
-            #set tag of compare_models
-            mlflow.set_tag("Source", "setup")
-            
-            import secrets
-            URI = secrets.token_hex(nbytes=4)
-            mlflow.set_tag("URI", URI)
-
-            mlflow.set_tag("USI", USI) 
-
-            mlflow.set_tag("Run Time", runtime)
-
-            mlflow.set_tag("Run ID", RunID)
-
-            # Log the transformation pipeline
-            save_model(prep_pipe, 'Transformation Pipeline', verbose=False)
-            mlflow.log_artifact('Transformation Pipeline' + '.pkl')
-            size_bytes = Path('Transformation Pipeline.pkl').stat().st_size
-            size_kb = np.round(size_bytes/1000, 2)
-            mlflow.set_tag("Size KB", size_kb)
-            os.remove('Transformation Pipeline.pkl')
-
-            # Log pandas profile
-            if log_profile:
-                import pandas_profiling
-                pf = pandas_profiling.ProfileReport(data_before_preprocess)
-                pf.to_file("Data Profile.html")
-                mlflow.log_artifact("Data Profile.html")
-                os.remove("Data Profile.html")
-                clear_output()
-                display(functions_)
-
-            # Log training and testing set
-            if log_data:
-                X_train.join(y_train).to_csv('Train.csv')
-                X_test.join(y_test).to_csv('Test.csv')
-                mlflow.log_artifact("Train.csv")
-                mlflow.log_artifact("Test.csv")
-                os.remove('Train.csv')
-                os.remove('Test.csv')
-
-            # Log input.txt that contains name of columns required in dataset 
-            # to use this pipeline based on USI/URI.
-
-            input_cols = list(data_before_preprocess.columns)
-            input_cols.remove(target)
-
-            with open("input.txt", "w") as output:
-                output.write(str(input_cols))
-            
-            mlflow.log_artifact("input.txt")
-            os.remove('input.txt')
+    
 
     logger.info("setup() succesfully completed")
 
@@ -2629,110 +2508,7 @@ def create_model(estimator = None,
     runtime = np.array(runtime_end - runtime_start).round(2)
     
     #mlflow logging
-    if logging_param and system:
-        
-        logger.info("Creating MLFlow logs")
-        
-        #Creating Logs message monitor
-        monitor.iloc[1,1:] = 'Creating Logs'
-        monitor.iloc[2,1:] = 'Almost Finished'    
-        if verbose:
-            if html_param:
-                update_display(monitor, display_id = 'monitor')
-
-        #import mlflow
-        import mlflow
-        import mlflow.sklearn
-        from pathlib import Path
-        import os
-
-        mlflow.set_experiment(exp_name_log)
-
-        with mlflow.start_run(run_name=full_name) as run:
-
-            # Get active run to log as tag
-            RunID = mlflow.active_run().info.run_id
-
-            # Log model parameters
-            params = model.get_params()
-
-            for i in list(params):
-                v = params.get(i)
-                if len(str(v)) > 250:
-                    params.pop(i)
-
-            mlflow.log_params(params)
-            
-            # Log metrics
-            mlflow.log_metrics({"Accuracy": avgs_acc[0], "AUC": avgs_auc[0], "Recall": avgs_recall[0], "Precision" : avgs_precision[0],
-                                "F1": avgs_f1[0], "Kappa": avgs_kappa[0], "MCC": avgs_mcc[0]})
-            
-            # Log internal parameters
-            mlflow.log_param("create_model_estimator", estimator)
-            mlflow.log_param("create_model_ensemble", ensemble)
-            mlflow.log_param("create_model_method", method)
-            mlflow.log_param("create_model_fold", fold)
-            mlflow.log_param("create_model_round", round)
-            mlflow.log_param("create_model_verbose", verbose)
-            mlflow.log_param("create_model_system", system)
-            
-            #set tag of compare_models
-            mlflow.set_tag("Source", "create_model")
-            
-            import secrets
-            URI = secrets.token_hex(nbytes=4)
-            mlflow.set_tag("URI", URI)   
-            mlflow.set_tag("USI", USI)
-            mlflow.set_tag("Run Time", runtime)
-            mlflow.set_tag("Run ID", RunID)
-
-            # Log training time in seconds
-            mlflow.log_metric("TT", model_fit_time)
-
-            # Log the CV results as model_results.html artifact
-            model_results.data.to_html('Results.html', col_space=65, justify='left')
-            mlflow.log_artifact('Results.html')
-            os.remove('Results.html')
-
-            # Generate hold-out predictions and save as html
-            holdout = predict_model(model, verbose=False)
-            holdout_score = pull()
-            display_container.pop(-1)
-            holdout_score.to_html('Holdout.html', col_space=65, justify='left')
-            mlflow.log_artifact('Holdout.html')
-            os.remove('Holdout.html')
-
-            # Log AUC and Confusion Matrix plot
-            if log_plots_param:
-                try:
-                    plot_model(model, plot = 'auc', verbose=False, save=True, system=False)
-                    mlflow.log_artifact('AUC.png')
-                    os.remove("AUC.png")
-                except:
-                    pass
-
-                try:
-                    plot_model(model, plot = 'confusion_matrix', verbose=False, save=True, system=False)
-                    mlflow.log_artifact('Confusion Matrix.png')
-                    os.remove("Confusion Matrix.png")
-                except:
-                    pass
-
-                try:
-                    plot_model(model, plot = 'feature', verbose=False, save=True, system=False)
-                    mlflow.log_artifact('Feature Importance.png')
-                    os.remove("Feature Importance.png")
-                except:
-                    pass
-
-            # Log model and transformation pipeline
-            save_model(model, 'Trained Model', verbose=False)
-            mlflow.log_artifact('Trained Model' + '.pkl')
-            size_bytes = Path('Trained Model.pkl').stat().st_size
-            size_kb = np.round(size_bytes/1000, 2)
-            mlflow.set_tag("Size KB", size_kb)
-            os.remove('Trained Model.pkl')
-
+    
     progress.value += 1
 
     logger.info("Uploading results into container")
@@ -3386,111 +3162,7 @@ def ensemble_model(estimator,
     runtime_end = time.time()
     runtime = np.array(runtime_end - runtime_start).round(2)
     
-    if logging_param:
-
-        logger.info("Creating MLFlow logs")
-
-        #Creating Logs message monitor
-        monitor.iloc[1,1:] = 'Creating Logs'
-        monitor.iloc[2,1:] = 'Almost Finished'    
-        if verbose:
-            if html_param:
-                update_display(monitor, display_id = 'monitor')
-
-
-        import mlflow
-        from pathlib import Path
-        import os
-
-        mlflow.set_experiment(exp_name_log)
-        full_name = model_dict_logging.get(mn)
-
-        with mlflow.start_run(run_name=full_name) as run:        
-
-            # Get active run to log as tag
-            RunID = mlflow.active_run().info.run_id
-
-            params = model.get_params()
-
-            for i in list(params):
-                v = params.get(i)
-                if len(str(v)) > 250:
-                    params.pop(i)
-
-            mlflow.log_params(params)
-            mlflow.log_metrics({"Accuracy": avgs_acc[0], "AUC": avgs_auc[0], "Recall": avgs_recall[0], "Precision" : avgs_precision[0],
-                                "F1": avgs_f1[0], "Kappa": avgs_kappa[0], "MCC": avgs_mcc[0]})
-            
-
-            # Log internal parameters
-            mlflow.log_param('ensemble_model_estimator', full_name)
-            mlflow.log_param('ensemble_model_method', method)
-            mlflow.log_param('ensemble_model_fold', fold)
-            mlflow.log_param('ensemble_model_n_estimators', n_estimators)
-            mlflow.log_param('ensemble_model_round', round)
-            mlflow.log_param('ensemble_model_choose_better', choose_better)
-            mlflow.log_param('ensemble_model_optimize', optimize)
-            mlflow.log_param('ensemble_model_verbose', verbose)
-
-            #set tag of compare_models
-            mlflow.set_tag("Source", "ensemble_model")
-            
-            import secrets
-            URI = secrets.token_hex(nbytes=4)
-            mlflow.set_tag("URI", URI)
-
-            mlflow.set_tag("USI", USI)
-            
-            mlflow.set_tag("Run Time", runtime)
-
-            mlflow.set_tag("Run ID", RunID)
-
-            # Log training time in seconds
-            mlflow.log_metric("TT", model_fit_time)
-
-            # Log model and transformation pipeline
-            save_model(model, 'Trained Model', verbose=False)
-            mlflow.log_artifact('Trained Model' + '.pkl')
-            size_bytes = Path('Trained Model.pkl').stat().st_size
-            size_kb = np.round(size_bytes/1000, 2)
-            mlflow.set_tag("Size KB", size_kb)
-            os.remove('Trained Model.pkl')
-
-            # Generate hold-out predictions and save as html
-            holdout = predict_model(model, verbose=False)
-            holdout_score = pull()
-            display_container.pop(-1)
-            holdout_score.to_html('Holdout.html', col_space=65, justify='left')
-            mlflow.log_artifact('Holdout.html')
-            os.remove('Holdout.html')
-
-            # Log AUC and Confusion Matrix plot
-            if log_plots_param:
-                try:
-                    plot_model(model, plot = 'auc', verbose=False, save=True, system=False)
-                    mlflow.log_artifact('AUC.png')
-                    os.remove("AUC.png")
-                except:
-                    pass
-
-                try:
-                    plot_model(model, plot = 'confusion_matrix', verbose=False, save=True, system=False)
-                    mlflow.log_artifact('Confusion Matrix.png')
-                    os.remove("Confusion Matrix.png")
-                except:
-                    pass
-
-                try:
-                    plot_model(model, plot = 'feature', verbose=False, save=True, system=False)
-                    mlflow.log_artifact('Feature Importance.png')
-                    os.remove("Feature Importance.png")
-                except:
-                    pass
-
-            # Log the CV results as model_results.html artifact
-            model_results.data.to_html('Results.html', col_space=65, justify='left')
-            mlflow.log_artifact('Results.html')
-            os.remove('Results.html')
+    
 
     if verbose:
         clear_output()
@@ -3648,9 +3320,7 @@ def plot_model(estimator,
     
     #progress bar
     progress = ipw.IntProgress(value=0, min=0, max=5, step=1 , description='Processing: ')
-    if verbose:
-        if html_param:
-            display(progress)
+
     
     #ignore warnings
     import warnings
@@ -4783,55 +4453,7 @@ def compare_models(blacklist = None,
         MLflow logging starts here
         """
 
-        if logging_param:
-
-            logger.info("Creating MLFlow logs")
-
-            import mlflow
-            from pathlib import Path
-            import os
-
-            run_name = model_names[name_counter]
-
-            with mlflow.start_run(run_name=run_name) as run:  
-
-                # Get active run to log as tag
-                RunID = mlflow.active_run().info.run_id
-
-                params = model.get_params()
-
-                for i in list(params):
-                    v = params.get(i)
-                    if len(str(v)) > 250:
-                        params.pop(i)
-                        
-                mlflow.log_params(params)
-
-                #set tag of compare_models
-                mlflow.set_tag("Source", "compare_models")
-                mlflow.set_tag("URI", URI)
-                mlflow.set_tag("USI", USI)
-                mlflow.set_tag("Run Time", runtime)
-                mlflow.set_tag("Run ID", RunID)
-
-                #Log top model metrics
-                mlflow.log_metric("Accuracy", avg_acc[0])
-                mlflow.log_metric("AUC", avg_auc[0])
-                mlflow.log_metric("Recall", avg_recall[0])
-                mlflow.log_metric("Precision", avg_precision[0])
-                mlflow.log_metric("F1", avg_f1[0])
-                mlflow.log_metric("Kappa", avg_kappa[0])
-                mlflow.log_metric("MCC", avg_mcc[0])
-                mlflow.log_metric("TT", avg_training_time[0])
-
-                # Log model and transformation pipeline
-                save_model(model, 'Trained Model', verbose=False)
-                mlflow.log_artifact('Trained Model' + '.pkl')
-                size_bytes = Path('Trained Model.pkl').stat().st_size
-                size_kb = np.round(size_bytes/1000, 2)
-                mlflow.set_tag("Size KB", size_kb)
-                os.remove('Trained Model.pkl')
-
+       
         score_acc =np.empty((0,0))
         score_auc =np.empty((0,0))
         score_recall =np.empty((0,0))
@@ -6027,120 +5649,6 @@ def tune_model(estimator = None,
     runtime_end = time.time()
     runtime = np.array(runtime_end - runtime_start).round(2)
     
-    #mlflow logging
-    if logging_param:
-
-        logger.info("Creating MLFlow logs")
-
-        #Creating Logs message monitor
-        monitor.iloc[1,1:] = 'Creating Logs'
-        monitor.iloc[2,1:] = 'Almost Finished'    
-        if verbose:
-            if html_param:
-                update_display(monitor, display_id = 'monitor')
-
-        import mlflow
-        from pathlib import Path
-        import os
-        
-        mlflow.set_experiment(exp_name_log)
-        full_name = model_dict_logging.get(mn)
-
-        with mlflow.start_run(run_name=full_name) as run:    
-
-            # Get active run to log as tag
-            RunID = mlflow.active_run().info.run_id
-
-            params = best_model.get_params()
-
-            # Log model parameters
-            params = model.get_params()
-
-            for i in list(params):
-                v = params.get(i)
-                if len(str(v)) > 250:
-                    params.pop(i)
-
-            mlflow.log_params(params)
-
-            mlflow.log_metrics({"Accuracy": avgs_acc[0], "AUC": avgs_auc[0], "Recall": avgs_recall[0], "Precision" : avgs_precision[0],
-                                "F1": avgs_f1[0], "Kappa": avgs_kappa[0], "MCC": avgs_mcc[0]})
-
-            # Log internal parameters
-            mlflow.log_param("tune_model_fold", fold)
-            mlflow.log_param("tune_model_round", round)
-            mlflow.log_param("tune_model_n_iter", n_iter)
-            mlflow.log_param("tune_model_optimize", optimize)
-            mlflow.log_param("tune_model_choose_better", choose_better)
-            mlflow.log_param("tune_model_verbose", verbose)
-
-            #set tag of compare_models
-            mlflow.set_tag("Source", "tune_model")
-            
-            import secrets
-            URI = secrets.token_hex(nbytes=4)
-            mlflow.set_tag("URI", URI)
-
-            mlflow.set_tag("USI", USI)
-
-            mlflow.set_tag("Run Time", runtime)
-
-            mlflow.set_tag("Run ID", RunID)
-
-            # Log training time in seconds
-            mlflow.log_metric("TT", model_fit_time)
-
-            # Log model and transformation pipeline
-            save_model(best_model, 'Trained Model', verbose=False)
-            mlflow.log_artifact('Trained Model' + '.pkl')
-            size_bytes = Path('Trained Model.pkl').stat().st_size
-            size_kb = np.round(size_bytes/1000, 2)
-            mlflow.set_tag("Size KB", size_kb)
-            os.remove('Trained Model.pkl')
-
-            # Log the CV results as model_results.html artifact
-            model_results.data.to_html('Results.html', col_space=65, justify='left')
-            mlflow.log_artifact('Results.html')
-            os.remove('Results.html')
-
-            # Generate hold-out predictions and save as html
-            holdout = predict_model(best_model, verbose=False)
-            holdout_score = pull()
-            display_container.pop(-1)
-            holdout_score.to_html('Holdout.html', col_space=65, justify='left')
-            mlflow.log_artifact('Holdout.html')
-            os.remove('Holdout.html')
-
-            # Log AUC and Confusion Matrix plot
-            if log_plots_param:
-                try:
-                    plot_model(model, plot = 'auc', verbose=False, save=True, system=False)
-                    mlflow.log_artifact('AUC.png')
-                    os.remove("AUC.png")
-                except:
-                    pass
-
-                try:
-                    plot_model(model, plot = 'confusion_matrix', verbose=False, save=True, system=False)
-                    mlflow.log_artifact('Confusion Matrix.png')
-                    os.remove("Confusion Matrix.png")
-                except:
-                    pass
-
-                try:
-                    plot_model(model, plot = 'feature', verbose=False, save=True, system=False)
-                    mlflow.log_artifact('Feature Importance.png')
-                    os.remove("Feature Importance.png")
-                except:
-                    pass
-
-            # Log hyperparameter tuning grid
-            d1 = model_grid.cv_results_.get('params')
-            dd = pd.DataFrame.from_dict(d1)
-            dd['Score'] = model_grid.cv_results_.get('mean_test_score')
-            dd.to_html('Iterations.html', col_space=75, justify='left')
-            mlflow.log_artifact('Iterations.html')
-            os.remove('Iterations.html')
         
     if verbose:
         clear_output()
@@ -6879,92 +6387,7 @@ def blend_models(estimator_list = 'All',
     runtime_end = time.time()
     runtime = np.array(runtime_end - runtime_start).round(2)
 
-    if logging_param:
-        
-        logger.info("Creating MLFlow logs")
-
-        #Creating Logs message monitor
-        monitor.iloc[1,1:] = 'Creating Logs'
-        monitor.iloc[2,1:] = 'Almost Finished'    
-        if verbose:
-            if html_param:
-                update_display(monitor, display_id = 'monitor')
-
-        import mlflow
-        from pathlib import Path
-        import os
-
-        with mlflow.start_run(run_name='Voting Classifier') as run:
-
-            # Get active run to log as tag
-            RunID = mlflow.active_run().info.run_id
-
-            mlflow.log_metrics({"Accuracy": avgs_acc[0], "AUC": avgs_auc[0], "Recall": avgs_recall[0], "Precision" : avgs_precision[0],
-                                "F1": avgs_f1[0], "Kappa": avgs_kappa[0], "MCC": avgs_mcc[0]})
-            
-
-            # Log internal parameters
-            mlflow.log_param("blend_models_estimator_list", model_names_final)
-            mlflow.log_param("blend_models_fold", fold)
-            mlflow.log_param("blend_models_round", round)
-            mlflow.log_param("blend_models_choose_better", choose_better)
-            mlflow.log_param("blend_models_optimize", optimize)
-            mlflow.log_param("blend_models_method", method)
-            mlflow.log_param("blend_models_turbo", turbo)
-            mlflow.log_param("blend_models_verbose", verbose)
-            
-            # Log model and transformation pipeline
-            save_model(model, 'Trained Model', verbose=False)
-            mlflow.log_artifact('Trained Model' + '.pkl')
-            size_bytes = Path('Trained Model.pkl').stat().st_size
-            size_kb = np.round(size_bytes/1000, 2)
-            mlflow.set_tag("Size KB", size_kb)
-            os.remove('Trained Model.pkl')
-            
-            # Generate hold-out predictions and save as html
-            holdout = predict_model(model, verbose=False)
-            holdout_score = pull()
-            display_container.pop(-1)
-            holdout_score.to_html('Holdout.html', col_space=65, justify='left')
-            mlflow.log_artifact('Holdout.html')
-            os.remove('Holdout.html')
-
-            #set tag of compare_models
-            mlflow.set_tag("Source", "blend_models")
-            
-            import secrets
-            URI = secrets.token_hex(nbytes=4)
-            mlflow.set_tag("URI", URI)
-
-            mlflow.set_tag("USI", USI)
-
-            mlflow.set_tag("Run Time", runtime)
-
-            mlflow.set_tag("Run ID", RunID)
-
-            # Log training time of compare_models
-            mlflow.log_metric("TT", model_fit_time)
-
-            # Log AUC and Confusion Matrix plot
-            if log_plots_param:
-                try:
-                    plot_model(model, plot = 'confusion_matrix', verbose=False, save=True, system=False)
-                    mlflow.log_artifact('Confusion Matrix.png')
-                    os.remove("Confusion Matrix.png")
-                except:
-                    pass
-
-            # Log the CV results as model_results.html artifact
-            model_results.data.to_html('Results.html', col_space=65, justify='left')
-            mlflow.log_artifact('Results.html')
-            os.remove('Results.html')
-
-    if verbose:
-        clear_output()
-        if html_param:
-            display(model_results)
-        else:
-            print(model_results.data)
+    
     
     logger.info("blend_models() succesfully completed")
 
@@ -7658,98 +7081,7 @@ def stack_models(estimator_list,
     runtime_end = time.time()
     runtime = np.array(runtime_end - runtime_start).round(2)
 
-    if logging_param and not finalize:
-        
-        logger.info("Creating MLFlow logs")
-
-        import mlflow
-        from pathlib import Path
-        import os
-
-        #Creating Logs message monitor
-        monitor.iloc[1,1:] = 'Creating Logs'
-        monitor.iloc[2,1:] = 'Almost Finished'    
-        if verbose:
-            if html_param:
-                update_display(monitor, display_id = 'monitor')
-
-        with mlflow.start_run(run_name='Stacking Classifier') as run:   
-
-            # Get active run to log as tag
-            RunID = mlflow.active_run().info.run_id
-
-            params = meta_model.get_params()
-
-            for i in list(params):
-                v = params.get(i)
-                if len(str(v)) > 250:
-                    params.pop(i)
-            
-            mlflow.log_params(params)
-            
-            mlflow.log_metrics({"Accuracy": avgs_acc[0], "AUC": avgs_auc[0], "Recall": avgs_recall[0], "Precision" : avgs_precision[0],
-                                "F1": avgs_f1[0], "Kappa": avgs_kappa[0], "MCC": avgs_mcc[0]})
-
-
-            # Log internal parameters
-            mlflow.log_param("stack_models_estimator_list", estimator_list)
-            mlflow.log_param("stack_models_fold", fold)
-            mlflow.log_param("stack_models_round", round)
-            mlflow.log_param("stack_models_method", method)
-            mlflow.log_param("stack_models_restack", restack)
-            mlflow.log_param("stack_models_plot", plot)
-            mlflow.log_param("stack_models_choose_better", choose_better)
-            mlflow.log_param("stack_models_optimize", optimize)
-            mlflow.log_param("stack_models_finalize", finalize)
-            mlflow.log_param("stack_models_verbose", verbose)
-            
-            #set tag of stack_models
-            mlflow.set_tag("Source", "stack_models")
-            
-            import secrets
-            URI = secrets.token_hex(nbytes=4)
-            mlflow.set_tag("URI", URI)
-
-            mlflow.set_tag("USI", USI)
-
-            mlflow.set_tag("Run Time", runtime)
-
-            mlflow.set_tag("Run ID", RunID)
-
-            # Log model and transformation pipeline
-            save_model(models_, 'Trained Model', verbose=False)
-            mlflow.log_artifact('Trained Model' + '.pkl')
-            size_bytes = Path('Trained Model.pkl').stat().st_size
-            size_kb = np.round(size_bytes/1000, 2)
-            mlflow.set_tag("Size KB", size_kb)
-            os.remove('Trained Model.pkl')
-
-            # Log training time of compare_models
-            mlflow.log_metric("TT", model_fit_time)
-
-            # Log the CV results as model_results.html artifact
-            model_results.data.to_html('Results.html', col_space=65, justify='left')
-            mlflow.log_artifact('Results.html')
-            os.remove('Results.html')
-
-            if log_plots_param:
-
-                plt.subplots(figsize=(15,7))
-                ax = sns.heatmap(base_prediction_cor, vmin=0.2, vmax=1, center=0,cmap='magma', square=True, annot=True, 
-                                linewidths=1)
-                ax.set_ylim(sorted(ax.get_xlim(), reverse=True))
-                plt.savefig("Stacking Heatmap.png")
-                mlflow.log_artifact('Stacking Heatmap.png')
-                os.remove('Stacking Heatmap.png')
-                plt.close()
-
-            # Generate hold-out predictions and save as html
-            holdout = predict_model(models_, verbose=False)
-            holdout_score = pull()
-            display_container.pop(-1)
-            holdout_score.to_html('Holdout.html', col_space=65, justify='left')
-            mlflow.log_artifact('Holdout.html')
-            os.remove('Holdout.html')
+    
 
     if verbose:
         clear_output()
@@ -8519,85 +7851,7 @@ def create_stacknet(estimator_list,
     runtime_end = time.time()
     runtime = np.array(runtime_end - runtime_start).round(2)
 
-    if logging_param and not finalize:
-
-        logger.info('Creating MLFlow logs')
-
-        import mlflow
-        from pathlib import Path
-        import os
-
-        #Creating Logs message monitor
-        monitor.iloc[1,1:] = 'Creating Logs'
-        monitor.iloc[2,1:] = 'Almost Finished'    
-        if verbose:
-            if html_param:
-                update_display(monitor, display_id = 'monitor')
-
-        with mlflow.start_run(run_name='Stacking Classifier (Multi-layer)') as run:       
-
-            # Get active run to log as tag
-            RunID = mlflow.active_run().info.run_id
-
-            params = meta_model.get_params()
-
-            for i in list(params):
-                v = params.get(i)
-                if len(str(v)) > 250:
-                    params.pop(i)
-    
-            mlflow.log_params(params)
-            
-            mlflow.log_metrics({"Accuracy": avgs_acc[0], "AUC": avgs_auc[0], "Recall": avgs_recall[0], "Precision" : avgs_precision[0],
-                                "F1": avgs_f1[0], "Kappa": avgs_kappa[0], "MCC": avgs_mcc[0]})
-
-            # Log other parameter of create_model function (internal to pycaret)
-            mlflow.log_param("create_stacknet_estimator_list", estimator_list)
-            mlflow.log_param("create_stacknet_fold", fold)
-            mlflow.log_param("create_stacknet_round", round)
-            mlflow.log_param("create_stacknet_method", method)
-            mlflow.log_param("create_stacknet_restack", restack)
-            mlflow.log_param("create_stacknet_choose_better", choose_better)
-            mlflow.log_param("create_stacknet_optimize", optimize)
-            mlflow.log_param("create_stacknet_finalize", finalize)
-            mlflow.log_param("create_stacknet_verbose", verbose)
-            
-            #set tag of create_stacknet
-            mlflow.set_tag("Source", "create_stacknet")
-            
-            import secrets
-            URI = secrets.token_hex(nbytes=4)
-            mlflow.set_tag("URI", URI)
-
-            mlflow.set_tag("USI", USI)
-
-            mlflow.set_tag("Run Time", runtime)
-
-            mlflow.set_tag("Run ID", RunID)
-
-            # Log model and transformation pipeline
-            save_model(models_, 'Trained Model', verbose=False)
-            mlflow.log_artifact('Trained Model' + '.pkl')
-            size_bytes = Path('Trained Model.pkl').stat().st_size
-            size_kb = np.round(size_bytes/1000, 2)
-            mlflow.set_tag("Size KB", size_kb)
-            os.remove('Trained Model.pkl')
-
-            # Log training time of compare_models
-            mlflow.log_metric("TT", model_fit_time)
-
-            # Log the CV results as model_results.html artifact
-            model_results.data.to_html('Results.html', col_space=65, justify='left')
-            mlflow.log_artifact('Results.html')
-            os.remove('Results.html')
-
-            # Generate hold-out predictions and save as html
-            holdout = predict_model(models_, verbose=False)
-            holdout_score = pull()
-            display_container.pop(-1)
-            holdout_score.to_html('Holdout.html', col_space=65, justify='left')
-            mlflow.log_artifact('Holdout.html')
-            os.remove('Holdout.html')
+   
 
     if verbose:
         clear_output()
@@ -9318,111 +8572,7 @@ def calibrate_model(estimator,
     runtime = np.array(runtime_end - runtime_start).round(2)
 
     #mlflow logging
-    if logging_param:
-        
-        logger.info("Creating MLFlow logs")
-
-        #Creating Logs message monitor
-        monitor.iloc[1,1:] = 'Creating Logs'
-        monitor.iloc[2,1:] = 'Almost Finished'    
-        if verbose:
-            if html_param:
-                update_display(monitor, display_id = 'monitor')
-
-        #import mlflow
-        import mlflow
-        import mlflow.sklearn
-        from pathlib import Path
-        import os
-
-        mlflow.set_experiment(exp_name_log)
-
-        with mlflow.start_run(run_name=base_estimator_full_name) as run:
-
-            # Get active run to log as tag
-            RunID = mlflow.active_run().info.run_id
-
-            # Log model parameters
-            params = model.get_params()
-            
-            for i in list(params):
-                v = params.get(i)
-                if len(str(v)) > 250:
-                    params.pop(i)
-
-            mlflow.log_params(params)
-            
-            # Log metrics
-            mlflow.log_metrics({"Accuracy": avgs_acc[0], "AUC": avgs_auc[0], "Recall": avgs_recall[0], "Precision" : avgs_precision[0],
-                                "F1": avgs_f1[0], "Kappa": avgs_kappa[0], "MCC": avgs_mcc[0]})
-            
-
-            # Log internal parameters
-            mlflow.log_param("calibrate_model_estimator", estimator)
-            mlflow.log_param("calibrate_model_method", method)
-            mlflow.log_param("calibrate_model_fold", fold)
-            mlflow.log_param("calibrate_model_round", round)
-            mlflow.log_param("calibrate_model_verbose", verbose)
-            
-            #set tag of compare_models
-            mlflow.set_tag("Source", "calibrate_model")
-            
-            import secrets
-            URI = secrets.token_hex(nbytes=4)
-            mlflow.set_tag("URI", URI)
-
-            mlflow.set_tag("USI", USI)
-
-            mlflow.set_tag("Run Time", runtime)
-
-            mlflow.set_tag("Run ID", RunID)
-
-            # Log training time in seconds
-            mlflow.log_metric("TT", model_fit_time)
-
-            # Log the CV results as model_results.html artifact
-            model_results.data.to_html('Results.html', col_space=65, justify='left')
-            mlflow.log_artifact('Results.html')
-            os.remove('Results.html')
-
-            # Generate hold-out predictions and save as html
-            holdout = predict_model(model, verbose=False)
-            holdout_score = pull()
-            display_container.pop(-1)
-            holdout_score.to_html('Holdout.html', col_space=65, justify='left')
-            mlflow.log_artifact('Holdout.html')
-            os.remove('Holdout.html')
-
-            # Log AUC and Confusion Matrix plot
-            if log_plots_param:
-                try:
-                    plot_model(model, plot = 'auc', verbose=False, save=True, system=False)
-                    mlflow.log_artifact('AUC.png')
-                    os.remove("AUC.png")
-                except:
-                    pass
-
-                try:
-                    plot_model(model, plot = 'confusion_matrix', verbose=False, save=True, system=False)
-                    mlflow.log_artifact('Confusion Matrix.png')
-                    os.remove("Confusion Matrix.png")
-                except:
-                    pass
-
-                try:
-                    plot_model(model, plot = 'feature', verbose=False, save=True, system=False)
-                    mlflow.log_artifact('Feature Importance.png')
-                    os.remove("Feature Importance.png")
-                except:
-                    pass
-                
-            # Log model and transformation pipeline
-            save_model(model, 'Trained Model', verbose=False)
-            mlflow.log_artifact('Trained Model' + '.pkl')
-            size_bytes = Path('Trained Model.pkl').stat().st_size
-            size_kb = np.round(size_bytes/1000, 2)
-            mlflow.set_tag("Size KB", size_kb)
-            os.remove('Trained Model.pkl')
+    
 
     if verbose:
         clear_output()
@@ -9681,123 +8831,7 @@ def finalize_model(estimator):
     runtime = np.array(runtime_end - runtime_start).round(2)
 
     #mlflow logging
-    if logging_param:
-
-        logger.info("Creating MLFlow logs")
-
-        #import mlflow
-        import mlflow
-        from pathlib import Path
-        import mlflow.sklearn
-        import os
-
-        mlflow.set_experiment(exp_name_log)
-
-        with mlflow.start_run(run_name=full_name) as run:
-
-            # Get active run to log as tag
-            RunID = mlflow.active_run().info.run_id
-
-            # Log model parameters
-            try:
-                params = model_final.get_params()
-
-                for i in list(params):
-                    v = params.get(i)
-                    if len(str(v)) > 250:
-                        params.pop(i)
-
-                mlflow.log_params(params)
-            
-            except:
-                pass
-            
-            # get metrics of non-finalized model and log it
-
-            try:
-                c = create_model(estimator, verbose=False, system=False)
-                cr = pull()
-                log_accuracy = cr.loc['Mean']['Accuracy'] 
-                log_auc = cr.loc['Mean']['AUC'] 
-                log_recall = cr.loc['Mean']['Recall'] 
-                log_precision = cr.loc['Mean']['Prec.'] 
-                log_f1 = cr.loc['Mean']['F1'] 
-                log_kappa = cr.loc['Mean']['Kappa'] 
-                log_mcc = cr.loc['Mean']['MCC']
-
-                mlflow.log_metric("Accuracy", log_accuracy)
-                mlflow.log_metric("AUC", log_auc)
-                mlflow.log_metric("Recall", log_recall)
-                mlflow.log_metric("Precision", log_precision)
-                mlflow.log_metric("F1", log_f1)
-                mlflow.log_metric("Kappa", log_kappa)
-                mlflow.log_metric("MCC", log_mcc)
-
-            except:
-                cr = pull_results
-                log_accuracy = cr.loc['Mean']['Accuracy'] 
-                log_auc = cr.loc['Mean']['AUC'] 
-                log_recall = cr.loc['Mean']['Recall'] 
-                log_precision = cr.loc['Mean']['Prec.'] 
-                log_f1 = cr.loc['Mean']['F1'] 
-                log_kappa = cr.loc['Mean']['Kappa'] 
-                log_mcc = cr.loc['Mean']['MCC']
-
-                mlflow.log_metric("Accuracy", log_accuracy)
-                mlflow.log_metric("AUC", log_auc)
-                mlflow.log_metric("Recall", log_recall)
-                mlflow.log_metric("Precision", log_precision)
-                mlflow.log_metric("F1", log_f1)
-                mlflow.log_metric("Kappa", log_kappa)
-                mlflow.log_metric("MCC", log_mcc)
-
-            #set tag of compare_models
-            mlflow.set_tag("Source", "finalize_model")
-            
-            #create MRI (model registration id)
-            mlflow.set_tag("Final", True)
-            
-            import secrets
-            URI = secrets.token_hex(nbytes=4)
-            mlflow.set_tag("URI", URI)           
-            mlflow.set_tag("USI", USI)
-            mlflow.set_tag("Run Time", runtime)
-            mlflow.set_tag("Run ID", RunID)
-
-            # Log training time in seconds
-            mlflow.log_metric("TT", runtime)
-
-            # Log AUC and Confusion Matrix plot
-            if log_plots_param:
-                try:
-                    plot_model(model, plot = 'auc', verbose=False, save=True, system=False)
-                    mlflow.log_artifact('AUC.png')
-                    os.remove("AUC.png")
-                except:
-                    pass
-
-                try:
-                    plot_model(model, plot = 'confusion_matrix', verbose=False, save=True, system=False)
-                    mlflow.log_artifact('Confusion Matrix.png')
-                    os.remove("Confusion Matrix.png")
-                except:
-                    pass
-
-                try:
-                    plot_model(model, plot = 'feature', verbose=False, save=True, system=False)
-                    mlflow.log_artifact('Feature Importance.png')
-                    os.remove("Feature Importance.png")
-                except:
-                    pass
-
-            # Log model and transformation pipeline
-            save_model(model_final, 'Trained Model', verbose=False)
-            mlflow.log_artifact('Trained Model' + '.pkl')
-            size_bytes = Path('Trained Model.pkl').stat().st_size
-            size_kb = np.round(size_bytes/1000, 2)
-            mlflow.set_tag("Size KB", size_kb)
-            os.remove('Trained Model.pkl')
-
+    
     logger.info("finalize_model() succesfully completed")
 
     return model_final
@@ -11142,56 +10176,7 @@ def models(type=None):
 
     return df
 
-def get_logs(experiment_name = None, save = False):
 
-    """
-
-    Description:
-    ------------
-    Returns a table with experiment logs consisting
-    run details, parameter, metrics and tags. 
-
-        Example
-        -------
-        logs = get_logs()
-
-        This will return pandas dataframe.
-
-    Parameters
-    ----------
-    experiment_name : string, default = None
-    When set to None current active run is used.
-
-    save : bool, default = False
-    When set to True, csv file is saved in current directory.
-      
-    
-    """
-
-    import sys
-    
-    if experiment_name is None:
-        exp_name_log_ = exp_name_log
-    else:
-        exp_name_log_ = experiment_name
-
-    import mlflow
-    from mlflow.tracking import MlflowClient
-    
-    logger.info("Importing MLFlow Client")
-    client = MlflowClient()
-
-    if client.get_experiment_by_name(exp_name_log_) is None:
-        sys.exit('No active run found. Check logging parameter in setup or to get logs for inactive run pass experiment_name.')
-    
-    exp_id = client.get_experiment_by_name(exp_name_log_).experiment_id    
-    runs = mlflow.search_runs(exp_id)
-
-    if save:
-        file_name = str(exp_name_log_) + '_logs.csv'
-        runs.to_csv(file_name, index=False)
-
-    return runs
 
 def get_config(variable):
 
