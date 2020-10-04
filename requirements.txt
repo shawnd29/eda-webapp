@@ -1,6 +1,6 @@
-pandas
+pandas==1.0.5
 numpy>=1.17
-seaborn
+seaborn=0.10.1
 matplotlib
 IPython
 joblib
