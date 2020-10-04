@@ -1308,8 +1308,7 @@ def setup(data,
         model = sample_estimator
         
     model_name = str(model).split("(")[0]
-    if 'CatBoostClassifier' in model_name:
-        model_name = 'CatBoostClassifier'
+
         
     #creating variables to be used later in the function
     X = data.drop(target,axis=1)
@@ -1882,7 +1881,7 @@ def create_model(estimator = None,
     
     #checking error for estimator (string)
     available_estimators = ['lr', 'knn', 'nb', 'dt', 'svm', 'rbfsvm', 'gpc', 'mlp', 'ridge', 'rf', 'qda', 'ada', 
-                            'gbc', 'lda', 'et', 'lightgbm', 'catboost']
+                            'gbc', 'lda', 'et', 'lightgbm']
 
     #only raise exception of estimator is of type string.
     if type(estimator) is str:
@@ -1929,7 +1928,7 @@ def create_model(estimator = None,
         sys.exit('(Type Error): cross_validation parameter can only take argument as True or False.') 
 
     #checking boosting conflict with estimators
-    boosting_not_supported = ['lda','qda','ridge','mlp','gpc','svm','knn', 'catboost']
+    boosting_not_supported = ['lda','qda','ridge','mlp','gpc','svm','knn']
     if method == 'Boosting' and estimator in boosting_not_supported:
         sys.exit("(Type Error): Estimator does not provide class_weights or predict_proba function and hence not supported for the Boosting method. Change the estimator or method to 'Bagging'.")
     
@@ -2137,10 +2136,7 @@ def create_model(estimator = None,
         model = lgb.LGBMClassifier(random_state=seed, n_jobs=n_jobs_param, **kwargs)
         full_name = 'Light Gradient Boosting Machine'
         
-    elif estimator == 'catboost':
-        from catboost import CatBoostClassifier
-        model = CatBoostClassifier(random_state=seed, silent=True, thread_count=n_jobs_param, **kwargs) # Silent is True to suppress CatBoost iteration results 
-        full_name = 'CatBoost Classifier'
+
         
     else:
 
@@ -2167,7 +2163,6 @@ def create_model(estimator = None,
                             'MLPClassifier' : 'MLP Classifier',
                             'QuadraticDiscriminantAnalysis' : 'Quadratic Discriminant Analysis',
                             'LinearDiscriminantAnalysis' : 'Linear Discriminant Analysis',
-                            'CatBoostClassifier' : 'CatBoost Classifier',
                             'BaggingClassifier' : 'Bagging Classifier',
                             'VotingClassifier' : 'Voting Classifier'} 
 
@@ -2175,8 +2170,6 @@ def create_model(estimator = None,
 
             mn = get_model_name(estimator.estimator)
 
-            if 'catboost' in mn:
-                mn = 'CatBoostClassifier'
 
             if mn in model_dict_logging.keys():
                 full_name = model_dict_logging.get(mn)
@@ -2187,8 +2180,6 @@ def create_model(estimator = None,
 
             mn = get_model_name(estimator)
             
-            if 'catboost' in mn:
-                mn = 'CatBoostClassifier'
 
             if mn in model_dict_logging.keys():
                 full_name = model_dict_logging.get(mn)
@@ -2762,8 +2753,6 @@ def ensemble_model(estimator,
     else:
         mn = get_model_name(estimator)
 
-    if 'catboost' in str(estimator):
-        mn = 'CatBoostClassifier'
     
     model_dict = {'ExtraTreesClassifier' : 'et',
                 'GradientBoostingClassifier' : 'gbc', 
@@ -2781,7 +2770,6 @@ def ensemble_model(estimator,
                 'MLPClassifier' : 'mlp',
                 'QuadraticDiscriminantAnalysis' : 'qda',
                 'LinearDiscriminantAnalysis' : 'lda',
-                'CatBoostClassifier' : 'catboost',
                 'BaggingClassifier' : 'Bagging'}
 
     estimator__ = model_dict.get(mn)
@@ -2802,7 +2790,6 @@ def ensemble_model(estimator,
                         'MLPClassifier' : 'MLP Classifier',
                         'QuadraticDiscriminantAnalysis' : 'Quadratic Discriminant Analysis',
                         'LinearDiscriminantAnalysis' : 'Linear Discriminant Analysis',
-                        'CatBoostClassifier' : 'CatBoost Classifier',
                         'BaggingClassifier' : 'Bagging Classifier'}
 
     logger.info('Base model : ' + str(model_dict_logging.get(mn)))
@@ -3272,11 +3259,7 @@ def plot_model(estimator,
     if y.value_counts().count() > 2:
         if plot in multiclass_not_available:
             sys.exit('(Value Error): Plot Not Available for multiclass problems. Please see docstring for list of available Plots.')
-        
-    #exception for CatBoost
-    if 'CatBoostClassifier' in str(type(estimator)):
-        sys.exit('(Estimator Error): CatBoost estimator is not compatible with plot_model function, try using Catboost with interpret_model instead.')
-        
+                
     #checking for auc plot
     if not hasattr(estimator, 'predict_proba') and plot == 'auc':
         sys.exit('(Type Error): AUC plot not available for estimators with no predict_proba attribute.')
@@ -3837,7 +3820,7 @@ def compare_models(blacklist = None,
     
     #checking error for blacklist (string)
     available_estimators = ['lr', 'knn', 'nb', 'dt', 'svm', 'rbfsvm', 'gpc', 'mlp', 'ridge', 'rf', 'qda', 'ada', 
-                            'gbc', 'lda', 'et', 'lightgbm', 'catboost']
+                            'gbc', 'lda', 'et', 'lightgbm']
     
     if blacklist != None:
         for i in blacklist:
@@ -3981,7 +3964,6 @@ def compare_models(blacklist = None,
     from sklearn.discriminant_analysis import LinearDiscriminantAnalysis 
     from sklearn.ensemble import ExtraTreesClassifier
     from sklearn.multiclass import OneVsRestClassifier
-    from catboost import CatBoostClassifier
     try:
         import lightgbm as lgb
     except:
@@ -4030,7 +4012,6 @@ def compare_models(blacklist = None,
     lda = LinearDiscriminantAnalysis()
     et = ExtraTreesClassifier(random_state=seed, n_jobs=n_jobs_param)
     lightgbm = lgb.LGBMClassifier(random_state=seed, n_jobs=n_jobs_param)
-    catboost = CatBoostClassifier(random_state=seed, silent = True, thread_count=n_jobs_param) 
     
     logger.info("Import successful")
 
@@ -4040,7 +4021,6 @@ def compare_models(blacklist = None,
                    'Linear Discriminant Analysis' : 'lda', 
                    'Ridge Classifier' : 'ridge', 
                    'Ada Boost Classifier' : 'ada', 
-                   'CatBoost Classifier' : 'catboost', 
                    'Light Gradient Boosting Machine' : 'lightgbm', 
                    'Gradient Boosting Classifier' : 'gbc', 
                    'Random Forest Classifier' : 'rf',
@@ -4054,7 +4034,7 @@ def compare_models(blacklist = None,
                    'MLP Classifier' : 'mlp',
                    'SVM - Radial Kernel' : 'rbfsvm'}
 
-    model_library = [lr, knn, nb, dt, svm, rbfsvm, gpc, mlp, ridge, rf, qda, ada, gbc, lda, et, lightgbm, catboost]
+    model_library = [lr, knn, nb, dt, svm, rbfsvm, gpc, mlp, ridge, rf, qda, ada, gbc, lda, et, lightgbm]
 
     model_names = ['Logistic Regression',
                    'K Neighbors Classifier',
@@ -4071,20 +4051,19 @@ def compare_models(blacklist = None,
                    'Gradient Boosting Classifier',
                    'Linear Discriminant Analysis',
                    'Extra Trees Classifier',
-                   'Light Gradient Boosting Machine',
-                   'CatBoost Classifier']          
+                   'Light Gradient Boosting Machine']          
     
     #checking for blacklist models
     
     model_library_str = ['lr', 'knn', 'nb', 'dt', 'svm', 
                          'rbfsvm', 'gpc', 'mlp', 'ridge', 
                          'rf', 'qda', 'ada', 'gbc', 'lda', 
-                         'et', 'lightgbm', 'catboost']
+                         'et', 'lightgbm']
     
     model_library_str_ = ['lr', 'knn', 'nb', 'dt', 'svm', 
                           'rbfsvm', 'gpc', 'mlp', 'ridge', 
                           'rf', 'qda', 'ada', 'gbc', 'lda', 
-                          'et', 'lightgbm', 'catboost']
+                          'et', 'lightgbm']
     
     if blacklist is not None:
         
@@ -4117,7 +4096,7 @@ def compare_models(blacklist = None,
         
     if blacklist is None and turbo is True:
         
-        model_library = [lr, knn, nb, dt, svm, ridge, rf, qda, ada, gbc, lda, et, lightgbm, catboost]
+        model_library = [lr, knn, nb, dt, svm, ridge, rf, qda, ada, gbc, lda, et, lightgbm]
 
         model_names = ['Logistic Regression',
                        'K Neighbors Classifier',
@@ -4131,8 +4110,7 @@ def compare_models(blacklist = None,
                        'Gradient Boosting Classifier',
                        'Linear Discriminant Analysis',
                        'Extra Trees Classifier',
-                       'Light Gradient Boosting Machine',
-                       'CatBoost Classifier']
+                       'Light Gradient Boosting Machine']
         
     #checking for whitelist models
     if whitelist is not None:
@@ -4189,9 +4167,7 @@ def compare_models(blacklist = None,
             elif i == 'lightgbm':
                 model_library.append(lightgbm)
                 model_names.append('Light Gradient Boosting Machine') 
-            elif i == 'catboost':
-                model_library.append(catboost)
-                model_names.append('CatBoost Classifier')   
+    
 
     #multiclass check
     model_library_multiclass = []
@@ -4791,9 +4767,7 @@ def tune_model(estimator = None,
     else:
         mn = get_model_name(estimator)
 
-    if 'catboost' in mn:
-        mn = 'CatBoostClassifier'
-    
+  
     model_dict = {'ExtraTreesClassifier' : 'et',
                 'GradientBoostingClassifier' : 'gbc', 
                 'RandomForestClassifier' : 'rf',
@@ -4810,7 +4784,6 @@ def tune_model(estimator = None,
                 'MLPClassifier' : 'mlp',
                 'QuadraticDiscriminantAnalysis' : 'qda',
                 'LinearDiscriminantAnalysis' : 'lda',
-                'CatBoostClassifier' : 'catboost',
                 'BaggingClassifier' : 'Bagging'}
 
     model_dict_logging = {'ExtraTreesClassifier' : 'Extra Trees Classifier',
@@ -4829,7 +4802,6 @@ def tune_model(estimator = None,
                         'MLPClassifier' : 'MLP Classifier',
                         'QuadraticDiscriminantAnalysis' : 'Quadratic Discriminant Analysis',
                         'LinearDiscriminantAnalysis' : 'Linear Discriminant Analysis',
-                        'CatBoostClassifier' : 'CatBoost Classifier',
                         'BaggingClassifier' : 'Bagging Classifier',
                         'VotingClassifier' : 'Voting Classifier'}
 
@@ -5238,28 +5210,6 @@ def tune_model(estimator = None,
         best_model_param = model_grid.best_params_ 
         
         
-    elif estimator == 'catboost':
-        
-        from catboost import CatBoostClassifier
-
-        if custom_grid is not None:
-            param_grid = custom_grid
-        else:
-            param_grid = {'depth':[3,1,2,6,4,5,7,8,9,10],
-                        'iterations':[250,100,500,1000], 
-                        'learning_rate':[0.03,0.001,0.01,0.1,0.2,0.3], 
-                        'l2_leaf_reg':[3,1,5,10,100], 
-                        'border_count':[32,5,10,20,50,100,200], 
-                        }
-        
-        model_grid = RandomizedSearchCV(estimator=CatBoostClassifier(random_state=seed, silent=True, thread_count=n_jobs_param), 
-                                        param_distributions=param_grid, scoring=optimize, n_iter=n_iter, 
-                                        cv=cv, random_state=seed, n_jobs=n_jobs_param)
-
-        model_grid.fit(X_train,y_train)
-        model = model_grid.best_estimator_
-        best_model = model_grid.best_estimator_
-        best_model_param = model_grid.best_params_ 
         
     elif estimator == 'Bagging':
         
@@ -5734,10 +5684,10 @@ def blend_models(estimator_list = 'All',
         if type(estimator_list) is not list:
             sys.exit("(Value Error): estimator_list parameter only accepts 'All' as string or list of trained models.")
 
-    if estimator_list != 'All':
-        for i in estimator_list:
-            if 'sklearn' not in str(type(i)) and 'CatBoostClassifier' not in str(type(i)):
-                sys.exit("(Value Error): estimator_list parameter only accepts 'All' as string or trained model object.")
+    # if estimator_list != 'All':
+    #     for i in estimator_list:
+    #         if 'sklearn' not in str(type(i)) and 'CatBoostClassifier' not in str(type(i)):
+    #             sys.exit("(Value Error): estimator_list parameter only accepts 'All' as string or trained model object.")
 
     #checking method param with estimator list
     if estimator_list != 'All':
@@ -5755,10 +5705,10 @@ def blend_models(estimator_list = 'All',
                 sys.exit('(Type Error): Estimator list contains estimator that doesnt support probabilities and method is forced to soft. Either change the method or drop the estimator.')
     
     #checking catboost:
-    if estimator_list != 'All':
-        for i in estimator_list:
-            if 'CatBoostClassifier' in str(i):
-                sys.exit('(Type Error): CatBoost Classifier not supported in this function.')
+    # if estimator_list != 'All':
+    #     for i in estimator_list:
+    #         if 'CatBoostClassifier' in str(i):
+    #             sys.exit('(Type Error): CatBoost Classifier not supported in this function.')
     
     #checking fold parameter
     if type(fold) is not int:
@@ -6471,14 +6421,14 @@ def stack_models(estimator_list,
         method = 'hard'
 
     #checking error for estimator_list
-    for i in estimator_list:
-        if 'sklearn' not in str(type(i)) and 'CatBoostClassifier' not in str(type(i)):
-            sys.exit("(Value Error): estimator_list parameter only trained model object")
+    # for i in estimator_list:
+    #     if 'sklearn' not in str(type(i)) and 'CatBoostClassifier' not in str(type(i)):
+    #         sys.exit("(Value Error): estimator_list parameter only trained model object")
             
     #checking meta model
-    if meta_model is not None:
-        if 'sklearn' not in str(type(meta_model)) and 'CatBoostClassifier' not in str(type(meta_model)):
-            sys.exit("(Value Error): estimator_list parameter only accepts trained model object")
+    # if meta_model is not None:
+    #     if 'sklearn' not in str(type(meta_model)) and 'CatBoostClassifier' not in str(type(meta_model)):
+    #         sys.exit("(Value Error): estimator_list parameter only accepts trained model object")
     
     #stacking with multiclass
     if y.value_counts().count() > 2:
@@ -6625,11 +6575,7 @@ def stack_models(estimator_list,
     model_names_fixed = []
     
     for i in model_names:
-        if 'CatBoostClassifier' in i:
-            a = 'CatBoostClassifier'
-            model_names_fixed.append(a)
-        else:
-            model_names_fixed.append(i)
+        model_names_fixed.append(i)
             
     model_names = model_names_fixed
     
@@ -7176,15 +7122,15 @@ def create_stacknet(estimator_list,
         sys.exit("(Type Error): Single Layer stacking must be performed using stack_models(). ")
         
     #checking error for estimator_list
-    for i in estimator_list:
-        for j in i:
-            if 'sklearn' not in str(type(j)) and 'CatBoostClassifier' not in str(type(j)):
-                sys.exit("(Value Error): estimator_list parameter only trained model object")
+    # for i in estimator_list:
+    #     for j in i:
+    #         if 'sklearn' not in str(type(j)) and 'CatBoostClassifier' not in str(type(j)):
+    #             sys.exit("(Value Error): estimator_list parameter only trained model object")
     
-    #checking meta model
-    if meta_model is not None:
-        if 'sklearn' not in str(type(meta_model)) and 'CatBoostClassifier' not in str(type(meta_model)):
-            sys.exit("(Value Error): estimator_list parameter only trained model object")
+    # #checking meta model
+    # if meta_model is not None:
+    #     if 'sklearn' not in str(type(meta_model)) and 'CatBoostClassifier' not in str(type(meta_model)):
+    #         sys.exit("(Value Error): estimator_list parameter only trained model object")
     
     #stacknet with multiclass
     if y.value_counts().count() > 2:
@@ -7308,10 +7254,6 @@ def create_stacknet(estimator_list,
     base_level_fixed = []
     
     for i in base_level_names:
-        if 'CatBoostClassifier' in i:
-            a = 'CatBoostClassifier'
-            base_level_fixed.append(a)
-    else:
         base_level_fixed.append(i)
         
     base_level_fixed_2 = []
@@ -7331,10 +7273,7 @@ def create_stacknet(estimator_list,
     for item in inter_level:
         level_list=[]
         for m in item:
-            if 'CatBoostClassifier' in str(m).split("(")[0]:
-                level_list.append('CatBoostClassifier')
-            else:
-                level_list.append(str(m).split("(")[0])
+            level_list.append(str(m).split("(")[0])
         inter_level_names.append(level_list)
     
     logger.info("Copying training dataset")
@@ -7462,8 +7401,6 @@ def create_stacknet(estimator_list,
             """
             
             col = str(model).split("(")[0]
-            if 'CatBoostClassifier' in col:
-                col = 'CatBoostClassifier'
             col = col + '_InterLevel_' + str(inter_counter) + '_' + str(model_counter)
             base_array.columns = [col]
             
@@ -7880,14 +7817,10 @@ def interpret_model(estimator,
                       'DecisionTreeClassifier',
                       'ExtraTreesClassifier',
                       'GradientBoostingClassifier',
-                      'LGBMClassifier',
-                      'CatBoostClassifier']
+                      'LGBMClassifier']
     
     model_name = str(estimator).split("(")[0]
     
-    #Statement to find CatBoost and change name :
-    if model_name.find("catboost.core.CatBoostClassifier") != -1:
-        model_name = 'CatBoostClassifier'
     
     if model_name not in allowed_models:
         sys.exit('(Type Error): This function only supports tree based models for binary classification.')
@@ -7915,7 +7848,7 @@ def interpret_model(estimator,
     
     #defining type of classifier
     type1 = ['RandomForestClassifier','DecisionTreeClassifier','ExtraTreesClassifier', 'LGBMClassifier']
-    type2 = ['GradientBoostingClassifier', 'CatBoostClassifier']
+    type2 = ['GradientBoostingClassifier']
     
     if plot == 'summary':
         
@@ -8091,15 +8024,7 @@ def calibrate_model(estimator,
     import datetime, time
     runtime_start = time.time()
 
-    #Statement to find CatBoost and change name
-    model_name = str(estimator).split("(")[0]
-    if model_name.find("catboost.core.CatBoostClassifier") != -1:
-        model_name = 'CatBoostClassifier'
-
-    #catboost not allowed
-    not_allowed = ['CatBoostClassifier']
-    if model_name in not_allowed:
-        sys.exit('(Type Error): calibrate_model doesnt support CatBoost Classifier. Try different estimator.')
+   
     
     #checking fold parameter
     if type(fold) is not int:
@@ -8191,8 +8116,7 @@ def calibrate_model(estimator,
         else:
             mn = get_model_name(estimator)
 
-    if 'catboost' in mn:
-        mn = 'CatBoostClassifier' 
+  
 
     model_dict_logging = {'ExtraTreesClassifier' : 'Extra Trees Classifier',
                         'GradientBoostingClassifier' : 'Gradient Boosting Classifier', 
@@ -8210,7 +8134,6 @@ def calibrate_model(estimator,
                         'MLPClassifier' : 'MLP Classifier',
                         'QuadraticDiscriminantAnalysis' : 'Quadratic Discriminant Analysis',
                         'LinearDiscriminantAnalysis' : 'Linear Discriminant Analysis',
-                        'CatBoostClassifier' : 'CatBoost Classifier',
                         'BaggingClassifier' : 'Bagging Classifier',
                         'VotingClassifier' : 'Voting Classifier'}
 
@@ -8673,7 +8596,6 @@ def finalize_model(estimator):
                             'MLPClassifier' : 'MLP Classifier',
                             'QuadraticDiscriminantAnalysis' : 'Quadratic Discriminant Analysis',
                             'LinearDiscriminantAnalysis' : 'Linear Discriminant Analysis',
-                            'CatBoostClassifier' : 'CatBoost Classifier',
                             'BaggingClassifier' : 'Bagging Classifier',
                             'VotingClassifier' : 'Voting Classifier'}
                             
@@ -8698,9 +8620,6 @@ def finalize_model(estimator):
 
             if 'CalibratedClassifierCV' in mn:
                 mn = get_model_name(estimator.base_estimator)
-
-        if 'catboost' in mn:
-            mn = 'CatBoostClassifier'
 
     if type(estimator) is list:
         if type(estimator[0]) is not list:
@@ -9135,11 +9054,7 @@ def predict_model(estimator,
             base_level_fixed = []
 
             for i in base_model_names:
-                if 'CatBoostClassifier' in i:
-                    a = 'CatBoostClassifier'
-                    base_level_fixed.append(a)
-                else:
-                    base_level_fixed.append(i)
+                base_level_fixed.append(i)
 
             base_level_fixed_2 = []
 
@@ -9234,8 +9149,6 @@ def predict_model(estimator,
                     p = pd.DataFrame(p)
                     
                     col = str(model).split("(")[0]
-                    if 'CatBoostClassifier' in col:
-                        col = 'CatBoostClassifier'
                     col = col + '_InterLevel_' + str(inter_counter) + '_' + str(model_counter)
                     p.columns = [col]
 
@@ -9373,11 +9286,7 @@ def predict_model(estimator,
             model_names_fixed = []
 
             for i in model_names:
-                if 'CatBoostClassifier' in i:
-                    a = 'CatBoostClassifier'
-                    model_names_fixed.append(a)
-                else:
-                    model_names_fixed.append(i)
+                model_names_fixed.append(i)
 
             model_names = model_names_fixed
 
@@ -9540,9 +9449,6 @@ def predict_model(estimator,
 
         elif full_name == 'L G B M Classifier':
             full_name = 'Light Gradient Boosting Machine'
-
-        elif 'Cat Boost Classifier' in full_name:
-            full_name = 'CatBoost Classifier'
 
         
         #prediction starts here
@@ -9855,8 +9761,7 @@ def optimize_threshold(estimator,
     model = estimator
     
     model_name = str(model).split("(")[0]
-    if 'CatBoostClassifier' in model_name:
-        model_name = 'CatBoostClassifier'
+
         
     #generate predictions and store actual on y_test in numpy array
     actual = np.array(y_test)
@@ -10046,7 +9951,7 @@ def models(type=None):
     
     import pandas as pd
 
-    model_id = ['lr', 'knn', 'nb', 'dt', 'svm', 'rbfsvm', 'gpc', 'mlp', 'ridge', 'rf', 'qda', 'ada', 'gbc', 'lda', 'et', 'lightgbm', 'catboost']
+    model_id = ['lr', 'knn', 'nb', 'dt', 'svm', 'rbfsvm', 'gpc', 'mlp', 'ridge', 'rf', 'qda', 'ada', 'gbc', 'lda', 'et', 'lightgbm']
     
     model_name = ['Logistic Regression',
                     'K Neighbors Classifier',
@@ -10063,8 +9968,7 @@ def models(type=None):
                     'Gradient Boosting Classifier',
                     'Linear Discriminant Analysis',
                     'Extra Trees Classifier',
-                    'Light Gradient Boosting Machine',
-                    'CatBoost Classifier']    
+                    'Light Gradient Boosting Machine']    
 
     model_ref = ['sklearn.linear_model.LogisticRegression',
                 'sklearn.neighbors.KNeighborsClassifier',
@@ -10081,11 +9985,10 @@ def models(type=None):
                 'sklearn.ensemble.GradientBoostingClassifier',
                 'sklearn.discriminant_analysis.LDA', 
                 'sklearn.ensemble.ExtraTreesClassifier',
-                'github.com/microsoft/LightGBM',
-                'catboost.ai']
+                'github.com/microsoft/LightGBM']
 
     model_turbo = [True, True, True, True, True, False, False, False, True,
-                   True, True, True, True, True, True, True, True]
+                   True, True, True, True, True, True, True]
 
     df = pd.DataFrame({'ID' : model_id, 
                        'Name' : model_name,
@@ -10096,7 +9999,7 @@ def models(type=None):
 
     linear_models = ['lr', 'ridge', 'svm']
     tree_models = ['dt'] 
-    ensemble_models = ['rf', 'et', 'gbc', 'lightgbm', 'catboost', 'ada']
+    ensemble_models = ['rf', 'et', 'gbc', 'lightgbm', 'ada']
 
     if type == 'linear':
         df = df[df.index.isin(linear_models)]

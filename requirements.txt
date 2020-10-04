@@ -16,7 +16,6 @@ pyLDAvis
 gensim
 mlxtend
 pyod
-catboost>=0.23.2
 kmodes>=0.10.1
 datefinder>=0.7.0
 imbalanced-learn>=0.6.2

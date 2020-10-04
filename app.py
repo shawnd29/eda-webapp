@@ -8,9 +8,9 @@ page = st.sidebar.selectbox("Choose a page", ["Data Exploration","Machine Learni
 if page=='About the project':
     intro.hello()
 if page=='Data Exploration':
-    st.write('## **Streamined EDA**')
+    st.write('## **Streamlined EDA**')
     eda_webapp.eda_analysis()
 if page=='Machine Learning':
-    st.write('## **Streamined Machine Learning**')
+    st.write('## **Streamlined Machine Learning**')
     ml_webapp.ml_analysis()
     
