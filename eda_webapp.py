@@ -820,7 +820,8 @@ def eda_analysis():
 
     if st.button("You're done!! Click here to celebrate"):    
         st.balloons()
-
+    st.write("") 
+    st.info('As a side note: There is an amazing ML  platform to look at from the menu on the left')
 
 #### This is an expereimental feature that I was trying to implement. It focuses on manually seperating the categorical, numeric and time-series data. 
 #### Any advice on this would be greatly beneficial

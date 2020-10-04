@@ -75,7 +75,6 @@ def create_model_function(estimator):
     return ct.create_model(estimator)
 
 def ml_analysis():
-    st.write(ct.models()['Name'])
     session_state = SessionState.get(df=None,target_name=None,setup_model=None,comparison_model=None,compare_models_=None,model=None,
                                      model_results=None,model_choice=None,best_model=None)
 
@@ -111,14 +110,17 @@ def ml_analysis():
 
     st.write("### Define the target variable")
     st.write("")
-    
+    st.write("Here you can find the target variable within your dataset")
+
     if st.checkbox('Find the target variable'):
         if (files.loc[option_index,'name'].item() == "<Experimental Reading data>") and (files.loc[option_index,'target'].item()=="Find your target variable"):
             st.info("Search for the target variable from your dataset")
             st.write(session_state.df.head())
+            name_choice= st.text_input("Enter the target name")
         else:
             st.write("For this dataset, it is {0}".format(files.loc[option_index,'target'].item()) )
-        session_state.target_name = st.text_input("Enter the target name",files.loc[option_index,'target'].item())
+            name_choice= st.text_input("Enter the target name",files.loc[option_index,'target'].item())
+        session_state.target_name =name_choice
         
         st.write("Target: ",session_state.target_name)
     
@@ -141,14 +143,14 @@ def ml_analysis():
     st.write("")
     st.write("### Compare Various Models <This is an optional step>")
     st.write("")
-    st.info("This compares 18 classfication models and will take a lot of time to compute. ")
+    st.info("This compares 16 classfication models and will take a lot of time to compute. ")
     st.write("")
     st.write("")
     st.write("This evaluates a few models at a high level with a 5 folds Cross Validatation")
     if session_state.comparison_model == None:
         st.write("Here are some of the models that the data will be evaluated on:")
         st.write(ct.models()['Name'])
-    if st.checkbox("Comapare models:"):        
+    if st.checkbox("Comapare models: (This is optional and takes a while to compute )"):        
         if session_state.comparison_model == None:
             session_state.comparison_model,session_state.compare_models_=ct.compare_models(verbose = False, fold =5)
         st.write("### Table of scores")
@@ -158,7 +160,7 @@ def ml_analysis():
         #X_test_ ,display_container = ct.predict_model(model)
     
     st.write("")
-    st.write("### Choose your specific model")
+    st.write("## Choose your specific model")
     st.write("### Depending on the desired metrics, you can choose a model that you see fit")
     if st.checkbox("Create a specific model"):
         model_dict = {  'Choose a value': 'Choose a value',
@@ -202,7 +204,7 @@ def ml_analysis():
     
     st.write("")
     st.write("### Visualize the model metrics")
-    st.write("You can get a much more intuitive analysis of the model")
+    st.write("You can get a much more visual intuitive analysis of the model")
     if st.checkbox("Plot the model metrics"):
         # make a selection for various models
         plot_dict=dict([('Choose a value', 'Choose a value'),
@@ -259,7 +261,8 @@ def ml_analysis():
     st.write("")
     if st.button("You're done!! Click here to celebrate"):    
         st.balloons()
-    
+    st.write("") 
+    st.info('As a side note: There is an amazing EDA platform to look at from the menu on the left')
 
 
 def download_button(object_to_download, download_filename, button_text, pickle_it=False):
@@ -360,6 +363,6 @@ def download_button(object_to_download, download_filename, button_text, pickle_i
 # final_rf = finalize_model(tuned_lda)
 
 if __name__ == "__main__":
-    #st.info('Do look at the menu at the left for the various projects')
     st.write("# Streamlined ML")
     ml_analysis()
+   
