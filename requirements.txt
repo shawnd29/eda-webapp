@@ -13,9 +13,7 @@ textblob
 cufflinks>=0.17.0
 umap-learn
 pyLDAvis
-gensim
 mlxtend
-pyod
 kmodes>=0.10.1
 datefinder>=0.7.0
 imbalanced-learn>=0.6.2
