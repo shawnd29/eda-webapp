@@ -1060,7 +1060,7 @@ def setup(data,
     logger.info("Importing preprocessing module")
 
     #import library
-    import pycaret.preprocess as preprocess
+    import preprocess
     
     logger.info("Creating preprocessing pipeline")
 
