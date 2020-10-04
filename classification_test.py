@@ -439,7 +439,6 @@ def setup(data,
     import sys
     
 
-
     import logging
 
     # create logger
@@ -1883,7 +1882,7 @@ def create_model(estimator = None,
     
     #checking error for estimator (string)
     available_estimators = ['lr', 'knn', 'nb', 'dt', 'svm', 'rbfsvm', 'gpc', 'mlp', 'ridge', 'rf', 'qda', 'ada', 
-                            'gbc', 'lda', 'et', 'xgboost', 'lightgbm', 'catboost']
+                            'gbc', 'lda', 'et', 'lightgbm', 'catboost']
 
     #only raise exception of estimator is of type string.
     if type(estimator) is str:
@@ -2130,11 +2129,7 @@ def create_model(estimator = None,
         model = ExtraTreesClassifier(random_state=seed, n_jobs=n_jobs_param, **kwargs)
         full_name = 'Extra Trees Classifier'
 
-    elif estimator == 'xgboost':
 
-        from xgboost import XGBClassifier
-        model = XGBClassifier(random_state=seed, verbosity=0, n_jobs=n_jobs_param, **kwargs)
-        full_name = 'Extreme Gradient Boosting'
         
     elif estimator == 'lightgbm':
         
@@ -2160,7 +2155,6 @@ def create_model(estimator = None,
                             'GradientBoostingClassifier' : 'Gradient Boosting Classifier', 
                             'RandomForestClassifier' : 'Random Forest Classifier',
                             'LGBMClassifier' : 'Light Gradient Boosting Machine',
-                            'XGBClassifier' : 'Extreme Gradient Boosting',
                             'AdaBoostClassifier' : 'Ada Boost Classifier', 
                             'DecisionTreeClassifier' : 'Decision Tree Classifier', 
                             'RidgeClassifier' : 'Ridge Classifier',
@@ -2775,7 +2769,6 @@ def ensemble_model(estimator,
                 'GradientBoostingClassifier' : 'gbc', 
                 'RandomForestClassifier' : 'rf',
                 'LGBMClassifier' : 'lightgbm',
-                'XGBClassifier' : 'xgboost',
                 'AdaBoostClassifier' : 'ada', 
                 'DecisionTreeClassifier' : 'dt', 
                 'RidgeClassifier' : 'ridge',
@@ -2797,7 +2790,6 @@ def ensemble_model(estimator,
                         'GradientBoostingClassifier' : 'Gradient Boosting Classifier', 
                         'RandomForestClassifier' : 'Random Forest Classifier',
                         'LGBMClassifier' : 'Light Gradient Boosting Machine',
-                        'XGBClassifier' : 'Extreme Gradient Boosting',
                         'AdaBoostClassifier' : 'Ada Boost Classifier', 
                         'DecisionTreeClassifier' : 'Decision Tree Classifier', 
                         'RidgeClassifier' : 'Ridge Classifier',
@@ -3845,7 +3837,7 @@ def compare_models(blacklist = None,
     
     #checking error for blacklist (string)
     available_estimators = ['lr', 'knn', 'nb', 'dt', 'svm', 'rbfsvm', 'gpc', 'mlp', 'ridge', 'rf', 'qda', 'ada', 
-                            'gbc', 'lda', 'et', 'xgboost', 'lightgbm', 'catboost']
+                            'gbc', 'lda', 'et', 'lightgbm', 'catboost']
     
     if blacklist != None:
         for i in blacklist:
@@ -3989,7 +3981,6 @@ def compare_models(blacklist = None,
     from sklearn.discriminant_analysis import LinearDiscriminantAnalysis 
     from sklearn.ensemble import ExtraTreesClassifier
     from sklearn.multiclass import OneVsRestClassifier
-    from xgboost import XGBClassifier
     from catboost import CatBoostClassifier
     try:
         import lightgbm as lgb
@@ -4038,7 +4029,6 @@ def compare_models(blacklist = None,
     gbc = GradientBoostingClassifier(random_state=seed)
     lda = LinearDiscriminantAnalysis()
     et = ExtraTreesClassifier(random_state=seed, n_jobs=n_jobs_param)
-    xgboost = XGBClassifier(random_state=seed, verbosity=0, n_jobs=n_jobs_param)
     lightgbm = lgb.LGBMClassifier(random_state=seed, n_jobs=n_jobs_param)
     catboost = CatBoostClassifier(random_state=seed, silent = True, thread_count=n_jobs_param) 
     
@@ -4049,7 +4039,6 @@ def compare_models(blacklist = None,
     model_dict = {'Logistic Regression' : 'lr',
                    'Linear Discriminant Analysis' : 'lda', 
                    'Ridge Classifier' : 'ridge', 
-                   'Extreme Gradient Boosting' : 'xgboost',
                    'Ada Boost Classifier' : 'ada', 
                    'CatBoost Classifier' : 'catboost', 
                    'Light Gradient Boosting Machine' : 'lightgbm', 
@@ -4065,7 +4054,7 @@ def compare_models(blacklist = None,
                    'MLP Classifier' : 'mlp',
                    'SVM - Radial Kernel' : 'rbfsvm'}
 
-    model_library = [lr, knn, nb, dt, svm, rbfsvm, gpc, mlp, ridge, rf, qda, ada, gbc, lda, et, xgboost, lightgbm, catboost]
+    model_library = [lr, knn, nb, dt, svm, rbfsvm, gpc, mlp, ridge, rf, qda, ada, gbc, lda, et, lightgbm, catboost]
 
     model_names = ['Logistic Regression',
                    'K Neighbors Classifier',
@@ -4082,7 +4071,6 @@ def compare_models(blacklist = None,
                    'Gradient Boosting Classifier',
                    'Linear Discriminant Analysis',
                    'Extra Trees Classifier',
-                   'Extreme Gradient Boosting',
                    'Light Gradient Boosting Machine',
                    'CatBoost Classifier']          
     
@@ -4091,12 +4079,12 @@ def compare_models(blacklist = None,
     model_library_str = ['lr', 'knn', 'nb', 'dt', 'svm', 
                          'rbfsvm', 'gpc', 'mlp', 'ridge', 
                          'rf', 'qda', 'ada', 'gbc', 'lda', 
-                         'et', 'xgboost', 'lightgbm', 'catboost']
+                         'et', 'lightgbm', 'catboost']
     
     model_library_str_ = ['lr', 'knn', 'nb', 'dt', 'svm', 
                           'rbfsvm', 'gpc', 'mlp', 'ridge', 
                           'rf', 'qda', 'ada', 'gbc', 'lda', 
-                          'et', 'xgboost', 'lightgbm', 'catboost']
+                          'et', 'lightgbm', 'catboost']
     
     if blacklist is not None:
         
@@ -4129,7 +4117,7 @@ def compare_models(blacklist = None,
         
     if blacklist is None and turbo is True:
         
-        model_library = [lr, knn, nb, dt, svm, ridge, rf, qda, ada, gbc, lda, et, xgboost, lightgbm, catboost]
+        model_library = [lr, knn, nb, dt, svm, ridge, rf, qda, ada, gbc, lda, et, lightgbm, catboost]
 
         model_names = ['Logistic Regression',
                        'K Neighbors Classifier',
@@ -4143,7 +4131,6 @@ def compare_models(blacklist = None,
                        'Gradient Boosting Classifier',
                        'Linear Discriminant Analysis',
                        'Extra Trees Classifier',
-                       'Extreme Gradient Boosting',
                        'Light Gradient Boosting Machine',
                        'CatBoost Classifier']
         
@@ -4199,9 +4186,6 @@ def compare_models(blacklist = None,
             elif i == 'et':
                 model_library.append(et)
                 model_names.append('Extra Trees Classifier')   
-            elif i == 'xgboost':
-                model_library.append(xgboost)
-                model_names.append('Extreme Gradient Boosting') 
             elif i == 'lightgbm':
                 model_library.append(lightgbm)
                 model_names.append('Light Gradient Boosting Machine') 
@@ -4814,7 +4798,6 @@ def tune_model(estimator = None,
                 'GradientBoostingClassifier' : 'gbc', 
                 'RandomForestClassifier' : 'rf',
                 'LGBMClassifier' : 'lightgbm',
-                'XGBClassifier' : 'xgboost',
                 'AdaBoostClassifier' : 'ada', 
                 'DecisionTreeClassifier' : 'dt', 
                 'RidgeClassifier' : 'ridge',
@@ -4834,7 +4817,6 @@ def tune_model(estimator = None,
                         'GradientBoostingClassifier' : 'Gradient Boosting Classifier', 
                         'RandomForestClassifier' : 'Random Forest Classifier',
                         'LGBMClassifier' : 'Light Gradient Boosting Machine',
-                        'XGBClassifier' : 'Extreme Gradient Boosting',
                         'AdaBoostClassifier' : 'Ada Boost Classifier', 
                         'DecisionTreeClassifier' : 'Decision Tree Classifier', 
                         'RidgeClassifier' : 'Ridge Classifier',
@@ -5228,43 +5210,6 @@ def tune_model(estimator = None,
         best_model = model_grid.best_estimator_
         best_model_param = model_grid.best_params_ 
         
-        
-    elif estimator == 'xgboost':
-        
-        from xgboost import XGBClassifier
-        
-        num_class = y.value_counts().count()
-        
-        if custom_grid is not None:
-            param_grid = custom_grid
-
-        elif y.value_counts().count() > 2:
-            
-            param_grid = {'learning_rate': np.arange(0,1,0.01),
-                          'n_estimators': np.arange(10,500,20),
-                          'subsample': [0.1, 0.2, 0.3, 0.5, 0.7, 0.9, 1],
-                          'max_depth': [int(x) for x in np.linspace(10, 110, num = 11)], 
-                          'colsample_bytree': [0.5, 0.7, 0.9, 1],
-                          'min_child_weight': [1, 2, 3, 4],
-                          'num_class' : [num_class, num_class]
-                         }
-        else:
-            param_grid = {'learning_rate': np.arange(0,1,0.01),
-                          'n_estimators':[10, 30, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], 
-                          'subsample': [0.1, 0.2, 0.3, 0.5, 0.7, 0.9, 1],
-                          'max_depth': [int(x) for x in np.linspace(10, 110, num = 11)], 
-                          'colsample_bytree': [0.5, 0.7, 0.9, 1],
-                          'min_child_weight': [1, 2, 3, 4],
-                         }
-
-        model_grid = RandomizedSearchCV(estimator=XGBClassifier(random_state=seed, n_jobs=n_jobs_param, verbosity=0), 
-                                        param_distributions=param_grid, scoring=optimize, n_iter=n_iter, 
-                                        cv=cv, random_state=seed, n_jobs=n_jobs_param)
-        
-        model_grid.fit(X_train,y_train)
-        model = model_grid.best_estimator_
-        best_model = model_grid.best_estimator_
-        best_model_param = model_grid.best_params_ 
         
         
     elif estimator == 'lightgbm':
@@ -5979,7 +5924,6 @@ def blend_models(estimator_list = 'All',
         from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
         from sklearn.ensemble import ExtraTreesClassifier
         from sklearn.ensemble import BaggingClassifier 
-        from xgboost import XGBClassifier
         import lightgbm as lgb
         
         lr = LogisticRegression(random_state=seed) #don't add n_jobs parameter as it slows down the LR
@@ -5997,7 +5941,6 @@ def blend_models(estimator_list = 'All',
         gbc = GradientBoostingClassifier(random_state=seed)
         lda = LinearDiscriminantAnalysis()
         et = ExtraTreesClassifier(random_state=seed, n_jobs=n_jobs_param)
-        xgboost = XGBClassifier(random_state=seed, verbosity=0, n_jobs=n_jobs_param)
         lightgbm = lgb.LGBMClassifier(random_state=seed, n_jobs=n_jobs_param)
 
         logger.info("Import successful")
@@ -6007,17 +5950,17 @@ def blend_models(estimator_list = 'All',
         logger.info("Defining estimator list")
         if turbo:
             if method == 'hard':
-                estimator_list = [lr,knn,nb,dt,svm,ridge,rf,qda,ada,gbc,lda,et,xgboost,lightgbm]
+                estimator_list = [lr,knn,nb,dt,svm,ridge,rf,qda,ada,gbc,lda,et,lightgbm]
                 voting = 'hard'
             elif method == 'soft':
-                estimator_list = [lr,knn,nb,dt,rf,qda,ada,gbc,lda,et,xgboost,lightgbm]
+                estimator_list = [lr,knn,nb,dt,rf,qda,ada,gbc,lda,et,lightgbm]
                 voting = 'soft'
         else:
             if method == 'hard':
-                estimator_list = [lr,knn,nb,dt,svm,rbfsvm,gpc,mlp,ridge,rf,qda,ada,gbc,lda,et,xgboost,lightgbm]
+                estimator_list = [lr,knn,nb,dt,svm,rbfsvm,gpc,mlp,ridge,rf,qda,ada,gbc,lda,et,lightgbm]
                 voting = 'hard'
             elif method == 'soft':
-                estimator_list = [lr,knn,nb,dt,rbfsvm,gpc,mlp,rf,qda,ada,gbc,lda,et,xgboost,lightgbm]
+                estimator_list = [lr,knn,nb,dt,rbfsvm,gpc,mlp,rf,qda,ada,gbc,lda,et,lightgbm]
                 voting = 'soft'
                 
     else:
@@ -6059,9 +6002,6 @@ def blend_models(estimator_list = 'All',
 
         elif j == 'S V C':
             model_names_final.append('SVM - Radial Kernel')
-        
-        elif j == 'X G B Classifier':
-            model_names_final.append('Extreme Gradient Boosting')
         
         elif j == 'L G B M Classifier':
             model_names_final.append('Light Gradient Boosting Machine')
@@ -7940,7 +7880,6 @@ def interpret_model(estimator,
                       'DecisionTreeClassifier',
                       'ExtraTreesClassifier',
                       'GradientBoostingClassifier',
-                      'XGBClassifier',
                       'LGBMClassifier',
                       'CatBoostClassifier']
     
@@ -7976,7 +7915,7 @@ def interpret_model(estimator,
     
     #defining type of classifier
     type1 = ['RandomForestClassifier','DecisionTreeClassifier','ExtraTreesClassifier', 'LGBMClassifier']
-    type2 = ['GradientBoostingClassifier', 'XGBClassifier', 'CatBoostClassifier']
+    type2 = ['GradientBoostingClassifier', 'CatBoostClassifier']
     
     if plot == 'summary':
         
@@ -8259,7 +8198,6 @@ def calibrate_model(estimator,
                         'GradientBoostingClassifier' : 'Gradient Boosting Classifier', 
                         'RandomForestClassifier' : 'Random Forest Classifier',
                         'LGBMClassifier' : 'Light Gradient Boosting Machine',
-                        'XGBClassifier' : 'Extreme Gradient Boosting',
                         'AdaBoostClassifier' : 'Ada Boost Classifier', 
                         'DecisionTreeClassifier' : 'Decision Tree Classifier', 
                         'RidgeClassifier' : 'Ridge Classifier',
@@ -8723,7 +8661,6 @@ def finalize_model(estimator):
                             'GradientBoostingClassifier' : 'Gradient Boosting Classifier', 
                             'RandomForestClassifier' : 'Random Forest Classifier',
                             'LGBMClassifier' : 'Light Gradient Boosting Machine',
-                            'XGBClassifier' : 'Extreme Gradient Boosting',
                             'AdaBoostClassifier' : 'Ada Boost Classifier', 
                             'DecisionTreeClassifier' : 'Decision Tree Classifier', 
                             'RidgeClassifier' : 'Ridge Classifier',
@@ -9600,8 +9537,6 @@ def predict_model(estimator,
         elif full_name == 'S V C':
             full_name = 'SVM - Radial Kernel'
 
-        elif full_name == 'X G B Classifier':
-            full_name = 'Extreme Gradient Boosting'
 
         elif full_name == 'L G B M Classifier':
             full_name = 'Light Gradient Boosting Machine'
@@ -10111,7 +10046,7 @@ def models(type=None):
     
     import pandas as pd
 
-    model_id = ['lr', 'knn', 'nb', 'dt', 'svm', 'rbfsvm', 'gpc', 'mlp', 'ridge', 'rf', 'qda', 'ada', 'gbc', 'lda', 'et', 'xgboost', 'lightgbm', 'catboost']
+    model_id = ['lr', 'knn', 'nb', 'dt', 'svm', 'rbfsvm', 'gpc', 'mlp', 'ridge', 'rf', 'qda', 'ada', 'gbc', 'lda', 'et', 'lightgbm', 'catboost']
     
     model_name = ['Logistic Regression',
                     'K Neighbors Classifier',
@@ -10128,7 +10063,6 @@ def models(type=None):
                     'Gradient Boosting Classifier',
                     'Linear Discriminant Analysis',
                     'Extra Trees Classifier',
-                    'Extreme Gradient Boosting',
                     'Light Gradient Boosting Machine',
                     'CatBoost Classifier']    
 
@@ -10147,12 +10081,11 @@ def models(type=None):
                 'sklearn.ensemble.GradientBoostingClassifier',
                 'sklearn.discriminant_analysis.LDA', 
                 'sklearn.ensemble.ExtraTreesClassifier',
-                'xgboost.readthedocs.io',
                 'github.com/microsoft/LightGBM',
                 'catboost.ai']
 
     model_turbo = [True, True, True, True, True, False, False, False, True,
-                   True, True, True, True, True, True, True, True, True]
+                   True, True, True, True, True, True, True, True]
 
     df = pd.DataFrame({'ID' : model_id, 
                        'Name' : model_name,
@@ -10163,7 +10096,7 @@ def models(type=None):
 
     linear_models = ['lr', 'ridge', 'svm']
     tree_models = ['dt'] 
-    ensemble_models = ['rf', 'et', 'gbc', 'xgboost', 'lightgbm', 'catboost', 'ada']
+    ensemble_models = ['rf', 'et', 'gbc', 'lightgbm', 'catboost', 'ada']
 
     if type == 'linear':
         df = df[df.index.isin(linear_models)]
