@@ -165,7 +165,6 @@ def ml_analysis():
                         'Logistic Regression' : 'lr',
                     'Linear Discriminant Analysis' : 'lda', 
                     'Ridge Classifier' : 'ridge', 
-                    'Extreme Gradient Boosting' : 'xgboost',
                     'Ada Boost Classifier' : 'ada', 
                     'CatBoost Classifier' : 'catboost', 
                     'Light Gradient Boosting Machine' : 'lightgbm', 
