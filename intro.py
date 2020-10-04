@@ -6,9 +6,19 @@ def hello():
     st.write("## Aim")
     st.write("### This project was desgined to streamline the Exploratory Data Analysis (EDA) and Machine Learning commonly used in classification models")
     st.write("")
-    st.write("## Backstory")
+    st.write("## About the project")
     st.write("A lot of times, getting a high level analysis takes time to code and develop, and generally follows a linear path.")
     st.write("This project was designed to streamline that process and eventually build a baseline machine learning model as a citizen data scientist")
+    st.write("")
+     
+
+
+
+    st.write("The fun part of this project is that it provides some toy datasets to get a feel of the platform.")
+    st.write("You can also upload your own datasets to get some insights from. ")
+    st.write("")
+    st.write("**NOTE** The computation is handled by Heroku. While it does not store any information from the dataset, care must be taken to maintain the confidentiality for sensitive datasets.  You can download the repository to do your private analysis at https://github.com/shawnd29/eda-webapp")
+    
     st.write("")
     st.write("")
     st.write("## A little bit about me:")
@@ -39,9 +49,7 @@ def hello():
 
     st.write("")
     st.write("")
-    st.write("To get started, head over to the menu on the left.")
-    st.write("")
-    st.write("")
+
 
 
 
