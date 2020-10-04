@@ -5684,10 +5684,7 @@ def blend_models(estimator_list = 'All',
         if type(estimator_list) is not list:
             sys.exit("(Value Error): estimator_list parameter only accepts 'All' as string or list of trained models.")
 
-    # if estimator_list != 'All':
-    #     for i in estimator_list:
-    #         if 'sklearn' not in str(type(i)) and 'CatBoostClassifier' not in str(type(i)):
-    #             sys.exit("(Value Error): estimator_list parameter only accepts 'All' as string or trained model object.")
+
 
     #checking method param with estimator list
     if estimator_list != 'All':
@@ -5703,12 +5700,6 @@ def blend_models(estimator_list = 'All',
             
             if check >= 1:
                 sys.exit('(Type Error): Estimator list contains estimator that doesnt support probabilities and method is forced to soft. Either change the method or drop the estimator.')
-    
-    #checking catboost:
-    # if estimator_list != 'All':
-    #     for i in estimator_list:
-    #         if 'CatBoostClassifier' in str(i):
-    #             sys.exit('(Type Error): CatBoost Classifier not supported in this function.')
     
     #checking fold parameter
     if type(fold) is not int:
@@ -6420,15 +6411,8 @@ def stack_models(estimator_list,
     if y.value_counts().count() > 2:
         method = 'hard'
 
-    #checking error for estimator_list
-    # for i in estimator_list:
-    #     if 'sklearn' not in str(type(i)) and 'CatBoostClassifier' not in str(type(i)):
-    #         sys.exit("(Value Error): estimator_list parameter only trained model object")
-            
-    #checking meta model
-    # if meta_model is not None:
-    #     if 'sklearn' not in str(type(meta_model)) and 'CatBoostClassifier' not in str(type(meta_model)):
-    #         sys.exit("(Value Error): estimator_list parameter only accepts trained model object")
+
+
     
     #stacking with multiclass
     if y.value_counts().count() > 2:
@@ -7121,16 +7105,7 @@ def create_stacknet(estimator_list,
     if len(estimator_list) == 1:
         sys.exit("(Type Error): Single Layer stacking must be performed using stack_models(). ")
         
-    #checking error for estimator_list
-    # for i in estimator_list:
-    #     for j in i:
-    #         if 'sklearn' not in str(type(j)) and 'CatBoostClassifier' not in str(type(j)):
-    #             sys.exit("(Value Error): estimator_list parameter only trained model object")
-    
-    # #checking meta model
-    # if meta_model is not None:
-    #     if 'sklearn' not in str(type(meta_model)) and 'CatBoostClassifier' not in str(type(meta_model)):
-    #         sys.exit("(Value Error): estimator_list parameter only trained model object")
+
     
     #stacknet with multiclass
     if y.value_counts().count() > 2:

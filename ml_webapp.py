@@ -75,7 +75,7 @@ def create_model_function(estimator):
     return ct.create_model(estimator)
 
 def ml_analysis():
-    
+    st.write(ct.models()['Name'])
     session_state = SessionState.get(df=None,target_name=None,setup_model=None,comparison_model=None,compare_models_=None,model=None,
                                      model_results=None,model_choice=None,best_model=None)
 
@@ -165,8 +165,7 @@ def ml_analysis():
                         'Logistic Regression' : 'lr',
                     'Linear Discriminant Analysis' : 'lda', 
                     'Ridge Classifier' : 'ridge', 
-                    'Ada Boost Classifier' : 'ada', 
-                    'CatBoost Classifier' : 'catboost', 
+                    'Ada Boost Classifier' : 'ada',  
                     'Light Gradient Boosting Machine' : 'lightgbm', 
                     'Gradient Boosting Classifier' : 'gbc', 
                     'Random Forest Classifier' : 'rf',
