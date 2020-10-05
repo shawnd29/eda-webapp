@@ -12,6 +12,6 @@ if page=='Data Exploration':
     eda_webapp.eda_analysis()
 if page=='Machine Learning':
     st.info('As a side note: There is an amazing EDA platform to look at from the menu on the left')
-    st.write('#**Streamlined Machine Learning**')
+    st.write('# **Streamlined Machine Learning**')
     ml_webapp.ml_analysis()
     
