@@ -20,7 +20,17 @@ import re
 
 
 
-
+def define_introductions():
+    st.write("## **How to use the platform**")
+    st.write("Each section has a unique functionality for building a classification model.")
+    st.write("")
+    st.write("**Data Input:** You can use the existing datasets or upload your own CSV dataset and find some general insights on the data as a whole")
+    st.write("**Define the target variable:** This is used to specify the variable that you would like to classify on")
+    st.write("**Initial model setup:** Provides the preprocessing steps taken")
+    st.write("**Compare Various models:** Puts the data through 16 classification models to compare the best metrics")
+    st.write("**Choose your Specific Model:** Builds a select classification model ")
+    st.write("**Visualize the Model Metrics:** Provides some visual insights on the model ")
+    st.write("**Predict Model:** Gives a finalized prediction accuracy for the model")
 
 def read_file(): 
     '''
@@ -42,7 +52,7 @@ def read_file():
 
 #File location
     
-    st.write("### It's really great that you are curious! :smile: This is where you can add your own files if you download the source code")
+    st.write("### It's really great that you are curious! :smile: This is where you can add your own files")
     reading_data_choice= st.selectbox("Choose a way to read a file",["By uploading a CSV file","By manually writing the commands"])
    
     if reading_data_choice=="By uploading a CSV file":
@@ -52,16 +62,18 @@ def read_file():
             st.write(df.head())
 
     if reading_data_choice=="By manually writing the commands":
-        
-        DATA_FOLDER = st.text_area("Enter Folder path", '')
-        DATA_FILE = st.text_input("Enter File path", 'bank-additional-full.csv')
+        st.write("### This is used when you use this application locally. It asks for the file location and file name")
+        DATA_FOLDER = st.text_input("Enter Folder path", '')
+        DATA_FILE = st.text_input("Enter File name", '')
         sepretaion = st.text_input("Enter Seperation", ',')
         # DATA_FILE = 'bank-additional-full.csv'
         df=read_data(DATA_FOLDER,DATA_FILE,sepretaion)
         #df= pd.read_csv(os.path.join(DATA_FOLDER,DATA_FILE), sep=';')
+        st.write(" The data has been read as:")
+        st.write(df.head())
         documentation_substring= f"File {DATA_FILE} successfully read from {DATA_FOLDER}\n"
         
-        documentation_string+=documentation_substring+'\n'
+        #documentation_string+=documentation_substring+'\n'
     
     return df 
 
@@ -93,6 +105,8 @@ def ml_analysis():
     st.write("Continuing from the EDA, the streamlined ML predictions were designed to work best on binary classification datasets")
     st.write("")
 
+    define_introductions()
+    st.write("")
     st.write('## Data Input')
     #read_file()
     st.info('NOTE: You can also upload your own CSV data to play around with through the <Experimental Reading Data> option below')
@@ -136,21 +150,21 @@ def ml_analysis():
     
     st.write("")
     st.write("")
-    st.write("### Inital model setup")
+    st.write("### Initial model setup")
     st.write("This shows the general preprocessing steps taken before building the model")
     st.table(session_state.setup_model[-1])
 
     st.write("")
     st.write("### Compare Various Models <This is an optional step>")
     st.write("")
-    st.info("This compares 16 classfication models and will take a lot of time to compute. ")
+    st.info("This compares 16 classification models and will take a lot of time to compute. ")
     st.write("")
     st.write("")
-    st.write("This evaluates a few models at a high level with a 5 folds Cross Validatation")
+    st.write("This evaluates a few models at a high level with 5 folds Cross Validation")
     if session_state.comparison_model == None:
         st.write("Here are some of the models that the data will be evaluated on:")
         st.write(ct.models()['Name'])
-    if st.checkbox("Comapare models: (This is optional and takes a while to compute )"):        
+    if st.checkbox("Compare models: (This is optional and takes a while to compute )"):        
         if session_state.comparison_model == None:
             session_state.comparison_model,session_state.compare_models_=ct.compare_models(verbose = False, fold =5)
         st.write("### Table of scores")
@@ -211,20 +225,20 @@ def ml_analysis():
                                         ('Hyperparameters', 'parameter'),
                                         ('AUC', 'auc'), 
                                         ('Confusion Matrix', 'confusion_matrix'), 
-                                        ('Threshold', 'threshold'),
-                                        ('Precision Recall', 'pr'),
                                         ('Error', 'error'),
                                         ('Class Report', 'class_report'),
-                                        ('Feature Selection', 'rfe'),
-                                        ('Learning Curve', 'learning'),
-                                        ('Manifold Learning', 'manifold'),
+                                        ('Learning Curve', 'learning'),    
+                                        ('Threshold (I)', 'threshold'),
+                                        ('Precision Recall (I)', 'pr'),
+                                        ('Manifold Learning (I)', 'manifold'),
+                                        ('Feature Selection (I)', 'rfe'),
                                         ('Calibration Curve', 'calibration'),
                                         ('Validation Curve', 'vc'),
                                         ('Dimensions', 'dimension'),
                                         ('Feature Importance', 'feature'),
                                         ('Decision Boundary', 'boundary')
                                     ])
-        plot_options=st.selectbox("Choose your plots type",list(plot_dict.keys()))
+        plot_options=st.selectbox("Choose your plots type - (I) stands for computationally intensive",list(plot_dict.keys()))
         if plot_options!= "Choose a value":
             ct.plot_model(session_state.model,plot=plot_dict.get(plot_options))
             st.pyplot()

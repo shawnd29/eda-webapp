@@ -77,6 +77,17 @@ files1={'file_name':["bank-additional-full.csv","shelter_cat_outcome_eng.csv","d
 
 files=pd.DataFrame(files1)
 
+def define_introductions():
+    st.write("## **How to use the platform**")
+    st.write("Each section has a unique functionality for discovering insights from the data. ")
+    st.write("")
+    st.write("**Data Input:** You can use the existing datasets or upload your own CSV dataset and find some general insights on the data as a whole")
+    st.write("**Define the target variable:** This is used to specify the variable that you would like to classify on. (Useful for bivariate analysis)")
+    st.write("**Finding the Data Variables:** This is used to rearrange the categorical, numeric and date-time features")
+    st.write("**Categorical columns:** This highlights univariate and bivariate analysis on categorical and ordinal features")
+    st.write("**Numeric columns:** This highlights univariate and bivariate analysis on numeric and ratio features")
+    st.write("")
+    st.write("")
 
 def read_file(): 
     '''
@@ -571,7 +582,8 @@ def eda_analysis():
     st.write("This streamlined EDA shows a high-level analysis of your data, with just a few clicks!")
     st.write("The toy datasets below have their own unique attributes which highlights several key concepts.")
     st.write("")
-
+    define_introductions()
+    st.write("")
     st.write('## Data Input')
     #read_file()
     st.info('NOTE: You can also upload your own CSV data to play around with through the <Experimental Reading Data> option below')
