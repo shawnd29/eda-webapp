@@ -1,5 +1,5 @@
 # Streamlined Exploatory Data Analysis and Machine Learning
-##### (This is the project and the link is found [here](https://webapp-streamlined.herokuapp.com/) )
+##### (This is the project and the link is found [here](https://share.streamlit.io/shawnd29/eda-webapp/app.py) )
 ##### (For the UI that talks about the product, do visit [the platfrom](https://shawnd29.github.io/RapidInsights/))
 
 This project is used to streamline the common steps used when looking at columns for data analysis. 
@@ -33,5 +33,5 @@ To run the platfrom locally, download the repository locally and type:
 #### streamlit run app.py
 <br/>
 <br/>
-To view the final product, do visit https://webapp-streamlined.herokuapp.com/
+To view the final product, do visit https://share.streamlit.io/shawnd29/eda-webapp/app.py
  
