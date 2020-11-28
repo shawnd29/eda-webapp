@@ -1,4 +1,4 @@
-# Streamlined Exploatory Data Analysis and Machine Learning
+# Streamlined Exploatory Data Analysis and Machine Learning [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/shawnd29/eda-webapp/app.py)
 ##### (This is the project and the link is found [here](https://share.streamlit.io/shawnd29/eda-webapp/app.py) )
 ##### (For the UI that talks about the product, do visit [the platfrom](https://shawnd29.github.io/RapidInsights/))
 
