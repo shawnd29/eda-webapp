@@ -88,13 +88,13 @@ def create_model_function(estimator):
 
 def ml_analysis():
     session_state = SessionState.get(df=None,target_name=None,setup_model=None,comparison_model=None,compare_models_=None,model=None,
-                                     model_results=None,model_choice=None,best_model=None)
+                                     model_results=None,model_choice=None,best_model=None,file_name=None)
 
     session_state.df=pd.DataFrame()
     #target=pd.Series()
     # If you want to add your own dataset 
-    files1={'file_name':["bank-additional-full.csv","diabetes data.csv","<Experimental Reading data>"],
-            'name':["Bank information","Diabetes information","<Experimental Reading data>"],
+    files1={'file_name':["bank-additional-full.csv","diabetes data.csv","Upload your own CSV data"],
+            'name':["Bank information","Diabetes information","Upload your own CSV data"],
             'target':["y","Diabetes","Find your target variable"],
             'description':["This is a relatively cleaned dataset with balanced categorical and numeric values.","This dataset contains numeric-heavy features.",
             "This dataset shows how you could locally add your own data to explore"]   }
@@ -109,7 +109,7 @@ def ml_analysis():
     st.write("")
     st.write('## Data Input')
     #read_file()
-    st.info('NOTE: You can also upload your own CSV data to play around with through the <Experimental Reading Data> option below')
+    st.info('NOTE: You can also upload your own CSV data to play around with through the **Upload your own CSV data** option below')
     option = st.selectbox(
         'Choose which type of data',files.name)
     st.write("You have chosen "+option)
@@ -117,7 +117,7 @@ def ml_analysis():
     # st.write(files.loc[option_index,'file_name'].item())
     option_name=files.loc[option_index,'file_name'].item()
     st.write(files.loc[option_index,'description'].item())
-    if (option_name=='<Experimental Reading data>'):
+    if (option_name=='Upload your own CSV data'):
         session_state.df=read_file()
     else: 
         session_state.df= read_data("",option_name,",")
@@ -127,7 +127,7 @@ def ml_analysis():
     st.write("Here you can find the target variable within your dataset")
 
     if st.checkbox('Find the target variable'):
-        if (files.loc[option_index,'name'].item() == "<Experimental Reading data>") and (files.loc[option_index,'target'].item()=="Find your target variable"):
+        if (files.loc[option_index,'name'].item() == "Upload your own CSV data") and (files.loc[option_index,'target'].item()=="Find your target variable"):
             st.info("Search for the target variable from your dataset")
             st.write(session_state.df.head())
             name_choice= st.text_input("Enter the target name")
@@ -266,11 +266,26 @@ def ml_analysis():
         
         now = datetime.now()
         current_time = now.strftime("%Y_%m_%d_%H_%M_%S")
-        file_name="streamlined_ML_"+current_time+'.pkl'
-        st.write("The File will be saved as ", file_name)
+        session_state.file_name="streamlined_ML_"+current_time+'.pkl'
+        st.write("The File will be saved as ", session_state.file_name)
         st.write("Confirm the download by clicking on the button below")
-        st.markdown(download_button(combined_pickle, file_name, 'Pickle the model!',pickle_it=True), unsafe_allow_html=True)
+        st.markdown(download_button(combined_pickle, session_state.file_name, 'Pickle the model!',pickle_it=True), unsafe_allow_html=True)
     
+    
+
+    st.info("Below is the code that is used to load the model")
+    if (st.checkbox("Click here for the code snippet")==True):
+        st.write("#The ML platfrom requires Pycaret ")
+        st.write("#Do install Pycaret using")
+        st.write("#!pip install pycaret")
+        st.write("from pycaret.classification import *")
+        st.write(f"pipelined_model=load_model({session_state.file_name})")
+        st.write("#This contains the data preprocessing and the finalized model")
+        st.write("predicted_values= pipelined_model.predict(df)")
+        st.write("print (predicted_values)")
+        st.write("#Where df is the dataframe which needs to be predicted ")
+
+
     st.write("")
     st.write("")
     if st.button("You're done!! Click here to celebrate"):    
