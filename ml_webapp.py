@@ -275,15 +275,19 @@ def ml_analysis():
 
     st.info("Below is the code that is used to load the model")
     if (st.checkbox("Click here for the code snippet")==True):
-        st.write("#The ML platfrom requires Pycaret ")
+        st.write("#The ML platfrom requires Pycaret")
         st.write("#Do install Pycaret using")
         st.write("#!pip install pycaret")
+        st.write("")
+        st.write("import pandas as pd")
         st.write("from pycaret.classification import *")
-        st.write(f"pipelined_model=load_model({session_state.file_name})")
+        st.write("")
         st.write("#This contains the data preprocessing and the finalized model")
-        st.write("predicted_values= pipelined_model.predict(df)")
+        st.write(f"pipelined_model=load_model(\"{session_state.file_name[:-4]}\")")
+        st.write("")
+        st.write("#Where df is the dataframe which needs to be predicted")
+        st.write("predicted_values= predict_model(pipelined_model, data = df)")
         st.write("print (predicted_values)")
-        st.write("#Where df is the dataframe which needs to be predicted ")
 
 
     st.write("")
