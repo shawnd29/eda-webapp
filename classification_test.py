@@ -54,7 +54,7 @@ def setup(data,
           fix_imbalance = False, #added in pycaret==2.0.0
           fix_imbalance_method = None, #added in pycaret==2.0.0
           data_split_shuffle = True, #added in pycaret==2.0.0
-          folds_shuffle = False, #added in pycaret==2.0.0
+          folds_shuffle = True, #added in pycaret==2.0.0
           n_jobs = -1, #added in pycaret==2.0.0
           html = True, #added in pycaret==2.0.0
           session_id = None,
