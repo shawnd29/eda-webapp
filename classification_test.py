@@ -1112,7 +1112,7 @@ def setup(data,
                                           feature_interactions_top_features_to_select_percentage=interaction_threshold, 
                                           display_types = display_dtypes_pass, #this is for inferred input box
                                           target_transformation = False, #not needed for classification
-                                          random_state = seed)
+                                          random_state = 0)
 
     progress.value += 1
     logger.info("Preprocessing pipeline created successfully")
