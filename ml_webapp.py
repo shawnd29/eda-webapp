@@ -292,7 +292,6 @@ def ml_analysis():
         st.balloons()
     st.write("") 
     st.info('As a side note: There is an amazing EDA platform to look at from the menu on the left')
-    st.write("Check if this is updated")
 
 
 def download_button(object_to_download, download_filename, button_text, pickle_it=False):
