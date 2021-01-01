@@ -37,7 +37,8 @@ pd.set_option('expand_frame_repr', True)
 plt.style.use('seaborn-colorblind')
 
 bg_color = (0.25, 0.25, 0.25)
-sns.set(rc={"font.style":"normal",
+sns.set(
+    rc={"font.style":"normal",
             "axes.facecolor":bg_color,
             "figure.facecolor":bg_color,
             "text.color":"black",
@@ -47,8 +48,8 @@ sns.set(rc={"font.style":"normal",
             "axes.grid":False,
             'axes.labelsize':30,
             'figure.figsize':(20.0, 10.0),
-            'xtick.labelsize':20,
-            'ytick.labelsize':20,
+            'xtick.labelsize':30,
+            'ytick.labelsize':30,
             'axes.titlesize':40,
             'figure.autolayout': True
             })
@@ -69,8 +70,8 @@ df_numeric=pd.DataFrame()
 df_date=pd.DataFrame()
 target=pd.Series()
 # If you want to add your own dataset 
-files1={'file_name':["bank-additional-full.csv","shelter_cat_outcome_eng.csv","diabetes data.csv","googleplaystore.csv","<Experimental Reading data>"],
-        'name':["Bank information","Cat Shelter information","Diabetes information","Google Playstore","<Experimental Reading data>"],
+files1={'file_name':["bank-additional-full.csv","shelter_cat_outcome_eng.csv","diabetes data.csv","googleplaystore.csv","<Upload your own CSV data>"],
+        'name':["Bank information","Cat Shelter information","Diabetes information","Google Playstore","<Upload your own CSV data>"],
         'target':["y","outcome_type","Diabetes","","Find your target variable"],
         'description':["This is a relatively cleaned dataset with balanced categorical and numeric values.","This dataset focuses on missing and date-time values.","This dataset contains numeric-heavy features.",
         "This dataset contains categorical- heavy features with no target variable.","This dataset shows how you could locally add your own data to explore"]   }
@@ -99,7 +100,7 @@ def read_file():
     
     Returns
     =======
-    None
+    df: A Pandas DataFrame
 
     Comments
     ========
@@ -108,9 +109,7 @@ def read_file():
     '''
 
 #File location
-    global documentation_string
-    global documentation_substring
-    global df
+    
     st.write("### It's really great that you are curious! :smile: This is where you can add your own files if you download the source code")
     reading_data_choice= st.selectbox("Choose a way to read a file",["By uploading a CSV file","By manually writing the commands"])
    
@@ -118,21 +117,23 @@ def read_file():
         uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
         if uploaded_file is not None:
             df = pd.read_csv(uploaded_file)
-            st.write(df)
+            st.write(df.head())
 
     if reading_data_choice=="By manually writing the commands":
-        
-        DATA_FOLDER = st.text_area("Enter Folder path", '')
-        DATA_FILE = st.text_input("Enter File path", 'bank-additional-full.csv')
+        st.write("### This is used when you use this application locally. It asks for the file location and file name")
+        DATA_FOLDER = st.text_input("Enter Folder path", '')
+        DATA_FILE = st.text_input("Enter File name", '')
         sepretaion = st.text_input("Enter Seperation", ',')
         # DATA_FILE = 'bank-additional-full.csv'
         df=read_data(DATA_FOLDER,DATA_FILE,sepretaion)
         #df= pd.read_csv(os.path.join(DATA_FOLDER,DATA_FILE), sep=';')
+        st.write(" The data has been read as:")
+        st.write(df.head())
         documentation_substring= f"File {DATA_FILE} successfully read from {DATA_FOLDER}\n"
-        logging.info(documentation_substring)
-        documentation_string+=documentation_substring+'\n'
+        
+        #documentation_string+=documentation_substring+'\n'
     
-    pass 
+    return df 
 
 #@st.cache(allow_output_mutation=True)
 def read_data(DATA_FOLDER,DATA_FILE,sepretaion):
@@ -333,7 +334,8 @@ def column_analysis(df):
         plt.title(f'{col} - {unique_values[col]} unique values',fontdict = {'fontsize' : 25})
         plt.ylabel('Count');
         values=pd.value_counts(df[col]).plot.bar()
-        plt.xticks(rotation = 75);
+        plt.xticks(rotation = 75,size=25);
+        plt.yticks(size=25);
         plt.tight_layout()
         st.pyplot() 
     st.write("Columns with low information are:")
@@ -515,7 +517,7 @@ def time_summarized(data,x):
     =======
     Quick Stats of the data and also the count plot
     '''
-    bg_color = (0.25, 0.25, 0.25)
+    #bg_color = (0.25, 0.25, 0.25)
     # sns.set(rc={"font.style":"normal",
     #         "axes.facecolor":bg_color,
     #         "figure.facecolor":bg_color,
@@ -586,7 +588,7 @@ def eda_analysis():
     st.write("")
     st.write('## Data Input')
     #read_file()
-    st.info('NOTE: You can also upload your own CSV data to play around with through the <Experimental Reading Data> option below')
+    st.info('NOTE: You can also upload your own CSV data to play around with through the **<Upload your own CSV data>** option below')
     option = st.selectbox(
         'Choose which type of data',files.name)
     st.write("You have chosen "+option)
@@ -594,8 +596,9 @@ def eda_analysis():
     # st.write(files.loc[option_index,'file_name'].item())
     option_name=files.loc[option_index,'file_name'].item()
     st.write(files.loc[option_index,'description'].item())
-    if (option_name=='<Experimental Reading data>'):
-        read_file()
+    if (option_name=='<Upload your own CSV data>'):
+        df=read_file()
+        st.write("The file has been read")
     else: 
         df= read_data("",option_name,",")
 
@@ -688,7 +691,7 @@ def eda_analysis():
     st.write("")
     st.info('Make sure you define the target variable for bivariate classification')
     if st.checkbox('Find the target variable'):
-        if (files.loc[option_index,'name'].item() == "<Experimental Reading data>") and (files.loc[option_index,'target'].item()=="Find your target variable"):
+        if (files.loc[option_index,'name'].item() == "<Upload your own CSV data>") and (files.loc[option_index,'target'].item()=="Find your target variable"):
             st.info("Search for the target variable from your dataset")
             st.write(df.head())
         else:
@@ -705,7 +708,7 @@ def eda_analysis():
     
     st.write("### Finding the data variables") 
     st.write("You can manually change the categorical, numeric and date-time variables")
-    if (files.loc[option_index,'name'].item() == "<Experimental Reading data>"):
+    if (files.loc[option_index,'name'].item() == "<Upload your own CSV data>"):
         st.info("You would need to manually extract the date-time variables yourself")   
     if (option == "Cat Shelter information"):
         st.info("The variables: date_of_birth and datetime  should be manually changed to date-time variables")   
