@@ -145,7 +145,7 @@ def ml_analysis():
         st.error("Make sure to define the target variable")
 
     if session_state.setup_model == None:
-        session_state.setup_model= ct.setup(session_state.df, target = session_state.target_name,silent=True,sampling=False,html=False,folds_shuffle=True)
+        session_state.setup_model= ct.setup(session_state.df, target = session_state.target_name,silent=True,sampling=False,html=False)
         
     
     st.write("")
