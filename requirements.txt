@@ -6,7 +6,7 @@ plotly>=4.4.1
 IPython
 joblib
 pyod
-scikit-learn==0.23.2
+scikit-learn==0.22.2
 ipywidgets
 yellowbrick>=1.0.1
 lightgbm>=2.3.1
